@@ -74,18 +74,17 @@
 
 <style lang="scss">
 	.gallery {
-		/* @apply py-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full grid-flow-row-dense gap-2 lg:gap-4;*/
 		@apply flex flex-wrap gap-2;
 		&::after {
 			content: '';
 			flex-grow: 999999999;
 		}
 		div {
-			@apply flex-grow;
+			@apply w-full md:w-auto flex-grow;
 		}
 		.image {
 			vertical-align: bottom;
-			@apply h-96 flex-grow object-cover max-w-full min-w-full;
+			@apply h-96 flex-grow object-cover  max-w-full min-w-full;
 		}
 	}
 </style>

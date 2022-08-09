@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { invalidate } from '$app/navigation';
-	import { Camera } from 'svelte-heros';
+	import { notify } from '$lib/stores/notify';
+	import { Camera, CheckCircle } from 'svelte-heros';
 	import Button from '$lib/components/Button.svelte';
 
 	export let open = false;
@@ -42,8 +42,25 @@
 				method: 'POST',
 				body: formData
 			});
-			invalidate('/');
+
+			$notify = {
+				active: true,
+				icon: CheckCircle,
+				colour: 'success',
+				heading: 'Files uploaded!',
+				callback: () => {
+					form.reset();
+					window.location.reload();
+				}
+			};
 		} catch (e) {
+			$notify = {
+				active: true,
+				icon: CheckCircle,
+				colour: 'success',
+				heading: 'Files not uploaded!',
+				message: 'There was an error uploading the files.'
+			};
 			console.error(e);
 		} finally {
 			submitting = false;
@@ -101,6 +118,7 @@
 				accept="image/*, video/*, audio/*"
 				on:change={handleFileChange}
 				class="hidden"
+				required
 			/>
 			<div class="grid grid-cols-2 md:grid-cols-3 gap-2 not-prose mt-4">
 				{#each dataUrls as src, i}

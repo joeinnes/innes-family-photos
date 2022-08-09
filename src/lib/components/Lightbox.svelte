@@ -4,15 +4,12 @@
 	import Button from '$lib/components/Button.svelte';
 	import { fade } from 'svelte/transition';
 	import { selected } from '$lib/stores/selected';
-	import { Trash, Link, CloudDownload } from 'svelte-heros';
+	import { Trash, Link, CloudDownload, CheckCircle } from 'svelte-heros';
 	import Messenger from './icons/Messenger.svelte';
 	import WhatsApp from './icons/WhatsApp.svelte';
+	import { notify } from '$lib/stores/notify';
 
 	export let admin = false;
-	export let close = () => {
-		$selected = '';
-		return;
-	};
 
 	let copied = false;
 
@@ -63,14 +60,18 @@
 		}
 	};
 
+	const copyLink = () => {
+		navigator.clipboard.writeText(`${import.meta.env.VITE_BASE_URL}/f/${$selected}`);
+		$notify = {
+			active: true,
+			icon: CheckCircle,
+			colour: 'success',
+			heading: 'Link copied'
+		};
+	};
 	$: {
 		if (browser && el && $selected) {
 			get_average_rgb(el);
-		}
-	}
-	$: {
-		if (copied) {
-			copied = false;
 		}
 	}
 </script>
@@ -103,13 +104,7 @@
 					><CloudDownload slot="icon" />Download</Button
 				>
 
-				<Button
-					colour="neutral"
-					clickHandler={() =>
-						(copied =
-							true &&
-							navigator.clipboard.writeText(`${import.meta.env.VITE_BASE_URL}/f/${$selected}`))}
-				>
+				<Button colour="neutral" clickHandler={copyLink}>
 					<Link slot="icon" />Copy Link</Button
 				>
 				<a
