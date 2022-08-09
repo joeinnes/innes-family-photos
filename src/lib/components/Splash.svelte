@@ -17,10 +17,10 @@
 
 {#if display}
 	<div
-		class="fixed top-0 left-0 bottom-0 right-0 flex flex-col items-center justify-center z-30 p-4"
+		class="fixed top-0 left-0 bottom-0 right-0 flex flex-col items-center justify-center z-30 p-4 bg-black"
 		style="background-image: url({import.meta.env.VITE_SPLASH_BG ||
 			'https://source.unsplash.com/random'}); background-size: cover;"
-		transition:fade={{ delay: 1500, duration: 500 }}
+		out:fade={{ delay: 1500, duration: 500 }}
 		bind:clientHeight={height}
 		bind:clientWidth={width}
 	>

@@ -53,11 +53,19 @@ export const GET: RequestHandler = async ({ request, url }) => {
     }
   }
   if (token) {
-    const { Contents } = await listItems(query);
-    const list = Contents.sort((a, b) => b.Key - a.Key);
-    body = {
-      ...body,
-      list
+    try {
+      const { Contents } = await listItems(query);
+      const list = Contents.sort((a, b) => b.Key - a.Key);
+      body = {
+        ...body,
+        list
+      }
+    } catch (e) {
+      console.error(e);
+      body = {
+        ...body,
+        list: []
+      }
     }
   }
 
