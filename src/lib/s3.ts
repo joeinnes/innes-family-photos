@@ -1,8 +1,8 @@
 import AWS from 'aws-sdk';
 
 AWS.config.update({
-  accessKeyId: process.env.ACCESS_KEY,
-  secretAccessKey: process.env.SECRET_KEY,
+  accessKeyId: process.env.S3_ACCESS_KEY,
+  secretAccessKey: process.env.S3_SECRET_KEY,
 })
 const ep = new AWS.Endpoint(process.env.S3_ENDPOINT || '');
 const s3 = new AWS.S3({ endpoint: ep });
