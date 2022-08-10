@@ -12,4 +12,4 @@
 	}
 </script>
 
-<Lightbox {admin} />
+<Lightbox {admin} canClose={false} />

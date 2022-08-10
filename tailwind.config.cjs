@@ -18,7 +18,13 @@ module.exports = {
 	theme: {
 		extend: {
 			fontFamily: {
-				sans: ['Bespoke Sans', ...defaultTheme.fontFamily.sans]
+				sans: [
+					'Avenir',
+					'Century Gothic',
+					'CenturyGothic',
+					'Apple Gothic',
+					...defaultTheme.fontFamily.sans
+				]
 			},
 			colors: {
 				primary: { ...colours }

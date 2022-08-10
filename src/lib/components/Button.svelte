@@ -17,7 +17,7 @@
 
 <button
 	{type}
-	class="{classString} rounded px-4 py-2 flex gap-2 items-center select-none"
+	class="{classString} rounded px-4 py-2 flex gap-2 items-center select-none transition-colors duration-200"
 	class:disabled
 	on:click={clickHandler}
 	title={text}

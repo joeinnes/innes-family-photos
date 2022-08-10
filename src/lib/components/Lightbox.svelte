@@ -10,6 +10,7 @@
 	import { notify } from '$lib/stores/notify';
 
 	export let admin = false;
+	export let canClose = true;
 
 	let copied = false;
 
@@ -69,6 +70,11 @@
 			heading: 'Link copied'
 		};
 	};
+	const close = () => {
+		if (canClose) {
+			$selected = '';
+		}
+	};
 	$: {
 		if (browser && el && $selected) {
 			get_average_rgb(el);
@@ -84,9 +90,9 @@
 		on:scroll|preventDefault
 		on:mousewheel|preventDefault
 	>
-		<div class="lightbox-photo relative" on:click|self={() => ($selected = '')}>
+		<div class="lightbox-photo relative" on:click|self={close}>
 			<figure
-				class="zoom shadow-2xl"
+				class="zoom shadow-2xl mb-4"
 				on:mousemove={zoom}
 				style="background-image: url({'/file/' + $selected})"
 				draggable="false"

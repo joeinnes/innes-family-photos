@@ -36,10 +36,10 @@
 		.title {
 			@apply flex-1;
 			h1 {
-				@apply my-1 text-4xl md:text-6xl;
+				@apply text-4xl font-black tracking-wide text-neutral-900 mb-2;
 			}
 			h2 {
-				@apply text-lg font-normal my-0;
+				@apply text-sm uppercase text-neutral-400 font-bold tracking-wide;
 			}
 		}
 		.action-buttons {
