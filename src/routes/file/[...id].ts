@@ -1,16 +1,11 @@
 import { deleteFile, getFile } from "$lib/s3";
+import { getAuthStatus } from "$lib/auth_middleware";
 
 export const GET = async ({ params, request }) => {
-  const { headers } = request;
-  const cookie = headers.get('cookie');
-  let token = '';
-  if (cookie && cookie.substring(0, 6) === 'token=') {
-    token = cookie.substring(6);
-  }
-
-  if (!token || (token !== process.env.ADMIN_TOKEN && token !== process.env.USER_TOKEN)) {
+  const auth = getAuthStatus(request);
+  if (!auth) {
     return {
-      status: 403
+      status: 401
     }
   }
 
@@ -38,14 +33,15 @@ export const GET = async ({ params, request }) => {
 }
 
 export const DELETE = async ({ params, request }) => {
-  const { headers } = request;
-  const cookie = headers.get('cookie');
-  let token = '';
-  if (cookie && cookie.substring(0, 6) === 'token=') {
-    token = cookie.substring(6);
+  const auth = getAuthStatus(request);
+
+  if (!auth) {
+    return {
+      status: 401
+    }
   }
 
-  if (!token || (token !== process.env.ADMIN_TOKEN && token !== process.env.USER_TOKEN)) {
+  if (auth !== 'admin') {
     return {
       status: 403
     }

@@ -35,13 +35,15 @@
 		'https://source.unsplash.com/random'}); background-size: cover;"
 >
 	<div class="backdrop-blur p-8 border-8 border-white backdrop-brightness-50 flex flex-col">
-		<h1 class="text-white text-4xl md:4xl font-bold my-0">This site is password protected</h1>
+		<h1 class="text-white text-4xl md:4xl font-black my-0">This site is password protected</h1>
 		<input
 			type="password"
 			bind:value={password}
 			class="border rounded w-full my-6 px-2 md:px-6 py-1 md:py-4 text-4xl bg-opacity-50"
 			required
 		/>
-		<Button type="submit" colour="primary" forceText={true}><User slot="icon" />Log In</Button>
+		<div class="text-2xl font-bold flex justify-center">
+			<Button type="submit" colour="primary" forceText={true}><User slot="icon" />Log In</Button>
+		</div>
 	</div>
 </form>

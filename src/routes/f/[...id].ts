@@ -1,20 +1,16 @@
 import { doesFileExist } from "$lib/s3";
+import { getAuthStatus } from "$lib//auth_middleware";
 
-export const GET = async ({ params, request }) => {
-  const { headers } = request;
-  const cookie = headers.get('cookie');
-  let token = '';
-  let body = {};
-  if (cookie && cookie.substring(0, 6) === 'token=') {
-    token = cookie.substring(6);
-  }
+export const GET = async ({ request, params }) => {
+  let body = {}
+  const auth = getAuthStatus(request);
 
-  if (!token || (token !== process.env.ADMIN_TOKEN && token !== process.env.USER_TOKEN)) {
+  if (!auth) {
     return {
-      status: 403
+      status: 401
     }
   }
-  if (token === process.env.ADMIN_TOKEN) {
+  if (auth === "admin") {
     body = {
       ...body,
       admin: true

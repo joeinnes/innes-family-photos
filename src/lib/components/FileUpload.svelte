@@ -20,7 +20,7 @@
 	) => {
 		try {
 			submitting = true;
-
+			dialog.close();
 			const target = e.target as HTMLFormElement & {
 				files: HTMLInputElement;
 			};
@@ -101,7 +101,7 @@
 	><Camera slot="icon" /> Upload Photos</Button
 >
 
-<dialog bind:this={dialog} class="w-96">
+<dialog bind:this={dialog} class="w-full md:w-2/3 lg:w-1/2 bg-white rounded shadow">
 	<form
 		on:submit|preventDefault={(e) => uploadFile(e)}
 		class="flex flex-col gap-2"
@@ -120,12 +120,12 @@
 				class="hidden"
 				required
 			/>
-			<div class="grid grid-cols-2 md:grid-cols-3 gap-2 not-prose mt-4">
+			<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 rounded-lg not-prose mt-4">
 				{#each dataUrls as src, i}
-					<img {src} alt="Preview {i}" class="w-full h-auto aspect-square object-cover" />
+					<img {src} alt="Preview {i}" class="w-full h-auto aspect-square object-cover rounded" />
 				{/each}
 				<div
-					class="bg-primary-100 text-primary-300 aspect-square w-full text-bold flex flex-col justify-center items-center text-6xl h-auto"
+					class="bg-primary-100 text-primary-300 aspect-square w-full text-bold flex flex-col justify-center items-center text-6xl h-auto rounded"
 				>
 					&plus;
 				</div>

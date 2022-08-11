@@ -1,11 +1,14 @@
+import jwt from 'jsonwebtoken'
+import { encrypt } from '$lib/auth_middleware';
+
 import type { RequestHandler } from '@sveltejs/kit';
 export const POST: RequestHandler = async ({ request }) => {
   const { headers } = request;
   const auth = headers.get('Authorization');
-  let token = '';
+  let password = '';
   const d = new Date();
   if (auth && auth.indexOf(' ') > -1) {
-    token = auth.split(' ')[1];
+    password = auth.split(' ')[1];
   } else {
     return {
       headers: {
@@ -13,8 +16,9 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     };
   }
-  if (token === process.env.ADMIN_TOKEN || token === process.env.USER_TOKEN) {
-
+  if (password === process.env.ADMIN_PASSWORD || password === process.env.USER_PASSWORD) {
+    const encryptedPass = encrypt(Buffer.from(password));
+    const token = jwt.sign({ password: encryptedPass }, process.env.ENCRYPTION_SECRET, { expiresIn: '1 year' })
     const expiryDays = parseInt(process.env.COOKIE_VALIDITY || '7', 10);
     d.setTime(d.getTime() + (expiryDays * 24 * 60 * 60 * 1000));
     return {
@@ -24,7 +28,8 @@ export const POST: RequestHandler = async ({ request }) => {
     };
   } else {
     return {
-      status: 401
+      status: 401,
+      message: 'Couldn\'t verify your credentials'
     }
   }
 }

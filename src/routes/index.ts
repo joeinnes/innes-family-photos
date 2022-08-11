@@ -1,80 +1,85 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler, ResponseBody } from '@sveltejs/kit';
 import { listItems, uploadFile } from '$lib/s3';
-import type { ObjectList } from 'aws-sdk/clients/s3';
-
-type Body = {
-  list: ObjectList | [];
-  auth: boolean;
-  admin: boolean;
-}
+import { getAuthStatus } from '$lib/auth_middleware';
 
 export const GET: RequestHandler = async ({ request, url }) => {
-  const { headers } = request;
-  const month = url.searchParams.get('month');
-  const cookie = headers.get('cookie');
-  let token = '';
-  if (cookie && cookie.substring(0, 6) === 'token=') {
-    token = cookie.substring(6);
-  }
-
-  let body: Body = {
-    list: [],
-    auth: false,
-    admin: false
+  let body: ResponseBody = {
+    status: 200,
+    auth: null,
+    list: []
   };
+  const month = url.searchParams.get('month');
+  const auth = getAuthStatus(request);
 
-  if (!token) {
-    body = { ...body, auth: false }
+  if (!auth) {
+    return {
+      status: 401,
+      error: {
+        message: 'Not authorised'
+      }
+    }
   }
 
-  if (token === process.env.ADMIN_TOKEN) {
+  body = {
+    ...body,
+    auth
+  }
+  try {
+    let query = {}
+    if (month) {
+      query = {
+        ...query,
+        prefix: month
+      }
+    } else {
+      query = {
+        ...query,
+        count: 10000
+      }
+    }
+    const { Contents } = await listItems(query);
+    const list = Contents.sort((a, b) => b.Key - a.Key);
     body = {
       ...body,
-      auth: true,
-      admin: true
+      list
     }
-  } else if (token === process.env.USER_TOKEN) {
+  } catch (e) {
+    console.error(e);
     body = {
       ...body,
-      auth: true,
-    }
-  }
-
-  let query = {}
-  if (month) {
-    query = {
-      ...query,
-      prefix: month
-    }
-  } else {
-    query = {
-      ...query,
-      count: 10000
-    }
-  }
-  if (token) {
-    try {
-      const { Contents } = await listItems(query);
-      const list = Contents.sort((a, b) => b.Key - a.Key);
-      body = {
-        ...body,
-        list
-      }
-    } catch (e) {
-      console.error(e);
-      body = {
-        ...body,
-        list: []
-      }
+      status: 500,
+      error: {
+        name: 'Server Error',
+        message: 'Something went wrong'
+      },
+      list: []
     }
   }
 
   return {
     body
   }
+
 }
 
 export const POST: RequestHandler = async ({ request }) => {
+  const auth = getAuthStatus(request);
+  if (!auth) {
+    return {
+      status: 401,
+      error: {
+        message: 'Not Logged In'
+      }
+    }
+  } else if (auth !== 'admin') {
+    return {
+      status: 403,
+      error: {
+        message: 'Upload Not Authorised'
+      }
+    }
+  }
+
   try {
     const formData = await request.formData();
     const files = formData.getAll('files');
@@ -91,7 +96,10 @@ export const POST: RequestHandler = async ({ request }) => {
   } catch (e) {
     console.log(e)
     return {
-      status: 500
+      status: 500,
+      error: {
+        message: 'Could not upload files.'
+      }
     }
   }
 }

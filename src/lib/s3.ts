@@ -23,11 +23,19 @@ export const listItems = async ({ count = 1000, prefix = '', startAfter = '' }) 
 
 export const uploadFile = async (file: Buffer, key: string, type: string) => {
   try {
-    const params = {
+    let params = {
       Bucket: process.env.S3_BUCKET || '',
       Body: file,
       Key: key,
       ContentType: type
+    }
+    if (process.env.S3_ENCRYPTION_KEY) {
+      const ssecKey = Buffer.alloc(32, process.env.S3_ENCRYPTION_KEY);
+      params = {
+        ...params,
+        SSECustomerAlgorithm: 'AES256',
+        SSECustomerKey: ssecKey
+      }
     }
     const res = await s3.putObject(params).promise();
     return res;
@@ -42,10 +50,19 @@ export const getFile = async (key: string) => {
     if (!key) {
       throw new Error('No key provided');
     }
-    const params = {
+    let params = {
       Bucket: process.env.S3_BUCKET || '',
       Key: key
+    };
+    if (process.env.S3_ENCRYPTION_KEY) {
+      const ssecKey = Buffer.alloc(32, process.env.S3_ENCRYPTION_KEY);
+      params = {
+        ...params,
+        SSECustomerAlgorithm: 'AES256',
+        SSECustomerKey: ssecKey
+      }
     }
+
     const res = await s3.getObject(params).promise();
     return res;
   } catch (e) {

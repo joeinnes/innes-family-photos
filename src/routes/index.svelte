@@ -1,19 +1,17 @@
 <script lang="ts">
 	import Lightbox from '$lib/components/Lightbox.svelte';
-	import Splash from '$lib/components/Splash.svelte';
-
 	import MonthView from '$lib/components/MonthView.svelte';
 	import LogIn from '$lib/components/LogIn.svelte';
+	import { authStatus } from '$lib/stores/authStatus';
+	import type { AuthStatus } from '$lib/stores/authStatus';
 
-	export let auth = false,
-		admin = false,
-		list = [
-			{
-				Key: ''
-			}
-		];
-	let password = '';
-	let selected = '';
+	export let auth: AuthStatus = null;
+	export let list = [
+		{
+			Key: ''
+		}
+	];
+
 	let shouldDisplay = false;
 
 	interface ImagesMap {
@@ -21,7 +19,10 @@
 	}
 	let images: ImagesMap = {};
 
-	$: shouldDisplay = auth;
+	$: if (auth) {
+		shouldDisplay = true;
+		$authStatus = auth;
+	}
 	$: {
 		list.forEach((el) => {
 			let month = el.Key.substring(0, 7);
@@ -37,8 +38,6 @@
 	}
 </script>
 
-<Splash />
-
 {#if !shouldDisplay}
 	<LogIn />
 {:else if !Object.keys(images).length}
@@ -49,4 +48,4 @@
 	{/each}
 {/if}
 
-<Lightbox {admin} />
+<Lightbox />

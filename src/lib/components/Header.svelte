@@ -3,7 +3,7 @@
 	import { Logout } from 'svelte-heros';
 	import FileUpload from '$lib/components/FileUpload.svelte';
 	import Button from '$lib/components/Button.svelte';
-	export let admin = false;
+	import { authStatus } from '$lib/stores/authStatus';
 
 	const logOut = async () => {
 		await fetch('/api/auth', {
@@ -22,11 +22,10 @@
 		<a href="/about">About</a>
 	</div>
 	<div class="action-buttons">
-		{#key admin}
-			{#if admin}
-				<FileUpload />
-			{/if}
-		{/key}
+		{#if $authStatus === 'admin'}
+			<FileUpload />
+		{/if}
+
 		<Button clickHandler={logOut} colour="primary" forceText={true}
 			><Logout slot="icon" />Log Out</Button
 		>
@@ -35,11 +34,11 @@
 
 <style lang="scss">
 	.header {
-		@apply flex flex-col md:flex-row justify-between items-center gap-2 w-full py-1 md:py-2 lg:py-4 container mx-auto;
+		@apply flex flex-col md:flex-row justify-between items-center gap-2 w-full p-2 lg:py-4 container mx-auto;
 		.title {
 			@apply flex-1 w-full;
 			h1 {
-				@apply text-4xl font-black tracking-wide text-neutral-900 mb-2 border-b-4 hover:border-primary-400 inline-block box-border border-transparent transition-colors;
+				@apply text-4xl font-black tracking-wide text-neutral-900 mb-2 border-b-4 hover:border-primary-400 inline-block box-border border-transparent transition-colors mb-0;
 			}
 			h2 {
 				@apply text-sm uppercase text-neutral-400 font-bold tracking-wide;

@@ -8,8 +8,9 @@
 	import Messenger from './icons/Messenger.svelte';
 	import WhatsApp from './icons/WhatsApp.svelte';
 	import { notify } from '$lib/stores/notify';
+	import { authStatus } from '$lib/stores/authStatus';
+	import type { AuthStatus } from '$lib/stores/authStatus';
 
-	export let admin = false;
 	export let canClose = true;
 
 	let copied = false;
@@ -51,14 +52,25 @@
 
 	const deleteFile = async () => {
 		try {
+			dialog.close();
 			await fetch(`/file/${$selected}`, {
 				method: 'DELETE'
 			});
-			// TODO: not reloading, no obvious action being taken, but file is deleted silently
-			invalidate('/');
-			goto('/');
+			$notify = {
+				active: true,
+				message: 'Deleted file',
+				icon: Trash,
+				colour: 'delete'
+			};
+			window.location.reload();
 		} catch (e) {
 			console.error(e);
+			$notify = {
+				active: true,
+				message: 'Could not delete file!',
+				icon: Trash,
+				colour: 'delete'
+			};
 		}
 	};
 
@@ -132,7 +144,7 @@
 						class="font-normal no-underline"
 						><Button colour="neutral"><Messenger slot="icon" />Share on Messenger</Button></a
 					>
-					{#if admin}
+					{#if $authStatus === 'admin'}
 						<Button colour="neutral" clickHandler={() => dialog.showModal()}
 							><Trash slot="icon" />Delete</Button
 						>
@@ -145,11 +157,9 @@
 				>
 					<p>Are you sure? You can't undo this.</p>
 					<div class="flex gap-2 justify-end pt-4">
-						<Button colour="neutral" clickHandler={(e) => dialog.close()}>Cancel</Button>
+						<Button colour="neutral" clickHandler={() => dialog.close()}>Cancel</Button>
 
-						<button class="bg-red-400 px-4 p-2 border-red-800 border rounded" on:click={deleteFile}
-							>Yes, delete</button
-						>
+						<Button colour="delete" clickHandler={deleteFile}>Yes, delete</Button>
 					</div>
 				</dialog>
 			</div>

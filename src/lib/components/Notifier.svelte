@@ -4,8 +4,12 @@
 	export let colour = 'primary';
 	const colours = {
 		primary: 'bg-primary-100 text-primary-700',
-		success: 'bg-green-100 text-green-700'
+		success: 'bg-green-100 text-green-700',
+		delete: 'bg-red-100 text-red-700'
 	};
+	$: {
+		colour = $notify.colour;
+	}
 </script>
 
 {#if $notify.active}
@@ -15,9 +19,7 @@
 	>
 		{#if $notify.icon}
 			<div
-				class="{colours[
-					$notify.colour
-				]} rounded h-12 w-auto aspect-square flex items-center justify-center"
+				class="{colours[colour]} rounded h-12 w-auto aspect-square flex items-center justify-center"
 			>
 				<svelte:component this={$notify.icon} />
 			</div>

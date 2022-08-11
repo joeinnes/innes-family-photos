@@ -1,6 +1,6 @@
 <script>
 	import '../app.css';
-	import { notify } from '$lib/stores/notify';
+	import Splash from '$lib/components/Splash.svelte';
 	import Notifier from '$lib/components/Notifier.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
@@ -12,8 +12,10 @@
 	<div class="app-container">
 		<slot />
 	</div>
-	<Notifier />
+
 	<Footer />
+	<Splash />
+	<Notifier />
 </div>
 
 <style lang="scss">

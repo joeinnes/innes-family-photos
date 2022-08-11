@@ -1,6 +1,6 @@
 <script lang="ts">
 	export let clickHandler = () => {};
-	export let colour: 'primary' | 'light' | 'neutral';
+	export let colour: 'primary' | 'light' | 'neutral' | 'delete';
 	export let type: 'reset' | 'submit' | 'button' = 'button';
 	export let forceText = false;
 	export let disabled = false;
@@ -9,7 +9,8 @@
 	let options = {
 		primary: 'text-white bg-primary-500 hover:bg-primary-600',
 		light: 'bg-primary-200 hover:bg-primary-300 text-primary-900',
-		neutral: 'bg-gray-200 border-gray-800 border text-gray-900'
+		neutral: 'bg-gray-200 text-gray-900 hover:bg-gray-300',
+		delete: 'bg-red-200 hover:bg-red:300 text-red-900'
 	};
 
 	let classString = options[colour] || '';
@@ -26,9 +27,6 @@
 		><slot /></span
 	></button
 >
-<span contenteditable="true" bind:textContent={text} class="hidden">
-	<slot />
-</span>
 
 <style lang="scss">
 	.disabled {
