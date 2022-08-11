@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Lightbox from '$lib/components/Lightbox.svelte';
 	import Splash from '$lib/components/Splash.svelte';
-	import Header from '$lib/components/Header.svelte';
+
 	import MonthView from '$lib/components/MonthView.svelte';
 	import LogIn from '$lib/components/LogIn.svelte';
 
@@ -39,28 +39,14 @@
 
 <Splash />
 
-<div class="container mx-auto w-full max-w-full">
-	<Header {admin} />
-	{#if !shouldDisplay}
-		<LogIn />
-	{:else if !Object.keys(images).length}
-		<h2>No photos uploaded!</h2>
-	{:else}
-		{#each Object.keys(images).sort().reverse() as month}
-			<MonthView images={images[month]} {month} />
-		{/each}
-	{/if}
-</div>
+{#if !shouldDisplay}
+	<LogIn />
+{:else if !Object.keys(images).length}
+	<h2>No photos uploaded!</h2>
+{:else}
+	{#each Object.keys(images).sort().reverse() as month}
+		<MonthView images={images[month]} {month} />
+	{/each}
+{/if}
 
-<Lightbox
-	{admin}
-	close={() => {
-		selected = '';
-	}}
-/>
-
-<style lang="scss">
-	.container {
-		@apply p-2 w-full;
-	}
-</style>
+<Lightbox {admin} />

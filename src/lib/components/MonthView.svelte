@@ -6,7 +6,7 @@
 	export let images: string[];
 	export let month = '';
 	let title = '';
-	let grid = true;
+	let grid = false;
 	let root: HTMLDivElement;
 	let loaded = false;
 	const getMonthTitle = (month: string) => {
@@ -89,7 +89,7 @@
 				@apply tracking-wide inline-block border-b-4 border-b-primary-300 text-xl font-bold uppercase mr-2;
 			}
 			.button {
-				@apply hover:bg-primary-100 transition-colors duration-200 cursor-pointer flex flex-col items-center justify-center rounded-full w-8 h-8;
+				@apply hover:bg-primary-100 transition-colors cursor-pointer flex flex-col items-center justify-center rounded-full w-8 h-8;
 			}
 		}
 

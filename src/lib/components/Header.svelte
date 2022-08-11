@@ -15,8 +15,11 @@
 
 <header class="header">
 	<div class="title">
-		<h1>{import.meta.env.VITE_SITE_NAME}</h1>
+		<h1><a href="/">{import.meta.env.VITE_SITE_NAME}</a></h1>
 		<h2>{import.meta.env.VITE_SITE_TAGLINE}</h2>
+	</div>
+	<div class="links">
+		<a href="/about">About</a>
 	</div>
 	<div class="action-buttons">
 		{#key admin}
@@ -32,18 +35,24 @@
 
 <style lang="scss">
 	.header {
-		@apply flex flex-col md:flex-row justify-between md:items-center gap-2 w-full;
+		@apply flex flex-col md:flex-row justify-between items-center gap-2 w-full py-1 md:py-2 lg:py-4 container mx-auto;
 		.title {
-			@apply flex-1;
+			@apply flex-1 w-full;
 			h1 {
-				@apply text-4xl font-black tracking-wide text-neutral-900 mb-2;
+				@apply text-4xl font-black tracking-wide text-neutral-900 mb-2 border-b-4 hover:border-primary-400 inline-block box-border border-transparent transition-colors;
 			}
 			h2 {
 				@apply text-sm uppercase text-neutral-400 font-bold tracking-wide;
 			}
 		}
 		.action-buttons {
-			@apply flex md:w-auto gap-2 text-sm md:text-base;
+			@apply flex md:w-auto gap-2 text-sm md:text-base items-center;
+		}
+	}
+	.links {
+		@apply pr-4;
+		a {
+			@apply text-sm uppercase text-neutral-400 font-bold tracking-wide  hover:text-neutral-700 transition-colors;
 		}
 	}
 </style>

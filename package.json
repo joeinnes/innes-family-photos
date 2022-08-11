@@ -39,5 +39,8 @@
 		"values.js": "^2.1.1",
 		"vite": "^3.0.4"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"jsonwebtoken": "^8.5.1"
+	}
 }

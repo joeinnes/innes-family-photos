@@ -9,16 +9,17 @@ export const POST: RequestHandler = async ({ request }) => {
   } else {
     return {
       headers: {
-        'Set-Cookie': `token='';expires=${d.toUTCString()};path=/`,
+        'Set-Cookie': `token='';expires=${d.toUTCString()};path=/; Secure; HttpOnly;SameSite=Strict`,
       }
     };
   }
   if (token === process.env.ADMIN_TOKEN || token === process.env.USER_TOKEN) {
+
     const expiryDays = parseInt(process.env.COOKIE_VALIDITY || '7', 10);
     d.setTime(d.getTime() + (expiryDays * 24 * 60 * 60 * 1000));
     return {
       headers: {
-        'Set-Cookie': `token=${token};expires=${d.toUTCString()};path=/`,
+        'Set-Cookie': `token=${token};expires=${d.toUTCString()};path=/;Secure; HttpOnly;SameSite=Strict`,
       }
     };
   } else {

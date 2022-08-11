@@ -13,6 +13,7 @@
 	export let canClose = true;
 
 	let copied = false;
+	let touched = false;
 
 	let el: HTMLImageElement;
 	let dialog: HTMLDialogElement;
@@ -62,7 +63,10 @@
 	};
 
 	const copyLink = () => {
-		navigator.clipboard.writeText(`${import.meta.env.VITE_BASE_URL}/f/${$selected}`);
+		setTimeout(
+			async () =>
+				await navigator.clipboard.writeText(`${import.meta.env.VITE_BASE_URL}/f/${$selected}`)
+		);
 		$notify = {
 			active: true,
 			icon: CheckCircle,
@@ -83,70 +87,72 @@
 </script>
 
 {#if $selected}
-	<div
-		class="lightbox-container"
-		transition:fade={{ duration: 150 }}
-		style="background-color: {colour}f0; background-opacity: 0.8;"
-		on:scroll|preventDefault
-		on:mousewheel|preventDefault
-	>
-		<div class="lightbox-photo relative" on:click|self={close}>
-			<figure
-				class="zoom shadow-2xl mb-4"
-				on:mousemove={zoom}
-				style="background-image: url({'/file/' + $selected})"
-				draggable="false"
-			>
-				<img
-					src={'/file/' + $selected}
-					alt={$selected}
-					bind:this={el}
-					on:load={() => get_average_rgb(el)}
+	<div class="z-20">
+		<div
+			class="lightbox-container"
+			transition:fade={{ duration: 200 }}
+			style="background-color: {colour}f0; "
+			on:scroll|preventDefault
+			on:mousewheel|preventDefault
+		>
+			<div class="lightbox-photo relative" on:click|self={close}>
+				<figure
+					class="zoom shadow-2xl mb-4"
+					on:mousemove={zoom}
+					style="background-image: url({'/file/' + $selected})"
 					draggable="false"
-				/>
-			</figure>
-			<div class="flex gap-1 md:gap-2">
-				<Button colour="neutral" clickHandler={() => goto('/file/' + $selected)}
-					><CloudDownload slot="icon" />Download</Button
 				>
-
-				<Button colour="neutral" clickHandler={copyLink}>
-					<Link slot="icon" />Copy Link</Button
-				>
-				<a
-					href="whatsapp://send?text={`${import.meta.env.VITE_BASE_URL}/f/${$selected}`}"
-					class="font-normal no-underline"
-				>
-					<Button colour="neutral">
-						<WhatsApp slot="icon" />
-						Share on WhatsApp
-					</Button>
-				</a>
-				<a
-					href="fb-messenger://share?link={`${import.meta.env.VITE_BASE_URL}/f/${$selected}`}"
-					class="font-normal no-underline"
-					><Button colour="neutral"><Messenger slot="icon" />Share on Messenger</Button></a
-				>
-				{#if admin}
-					<Button colour="neutral" clickHandler={() => dialog.showModal()}
-						><Trash slot="icon" />Delete</Button
+					<img
+						src={'/file/' + $selected}
+						alt={$selected}
+						bind:this={el}
+						on:load={() => get_average_rgb(el)}
+						draggable="false"
+					/>
+				</figure>
+				<div class="flex gap-1 md:gap-2">
+					<Button colour="neutral" clickHandler={() => goto('/file/' + $selected)}
+						><CloudDownload slot="icon" />Download</Button
 					>
-				{/if}
-			</div>
-			<dialog
-				class="backdrop:bg-gray-50 backdrop:bg-opacity-80 w-96 bg-white z-20 rounded border-2 shadow"
-				style="border-color: {colour}"
-				bind:this={dialog}
-			>
-				<p>Are you sure? You can't undo this.</p>
-				<div class="flex gap-2 justify-end pt-4">
-					<Button colour="neutral" clickHandler={(e) => dialog.close()}>Cancel</Button>
 
-					<button class="bg-red-400 px-4 p-2 border-red-800 border rounded" on:click={deleteFile}
-						>Yes, delete</button
+					<Button colour="neutral" clickHandler={copyLink}>
+						<Link slot="icon" />Copy Link</Button
 					>
+					<a
+						href="whatsapp://send?text={`${import.meta.env.VITE_BASE_URL}/f/${$selected}`}"
+						class="font-normal no-underline"
+					>
+						<Button colour="neutral">
+							<WhatsApp slot="icon" />
+							Share on WhatsApp
+						</Button>
+					</a>
+					<a
+						href="fb-messenger://share?link={`${import.meta.env.VITE_BASE_URL}/f/${$selected}`}"
+						class="font-normal no-underline"
+						><Button colour="neutral"><Messenger slot="icon" />Share on Messenger</Button></a
+					>
+					{#if admin}
+						<Button colour="neutral" clickHandler={() => dialog.showModal()}
+							><Trash slot="icon" />Delete</Button
+						>
+					{/if}
 				</div>
-			</dialog>
+				<dialog
+					class="backdrop:bg-gray-50 backdrop:bg-opacity-80 w-96 bg-white z-20 rounded border-2 shadow"
+					style="border-color: {colour}"
+					bind:this={dialog}
+				>
+					<p>Are you sure? You can't undo this.</p>
+					<div class="flex gap-2 justify-end pt-4">
+						<Button colour="neutral" clickHandler={(e) => dialog.close()}>Cancel</Button>
+
+						<button class="bg-red-400 px-4 p-2 border-red-800 border rounded" on:click={deleteFile}
+							>Yes, delete</button
+						>
+					</div>
+				</dialog>
+			</div>
 		</div>
 	</div>
 {/if}
@@ -154,30 +160,33 @@
 <style lang="scss">
 	.lightbox {
 		&-container {
-			@apply fixed top-0 bottom-0 left-0 right-0 bg-opacity-80 p-4 md:p-6 lg:p-12 xl:p-24;
+			@apply fixed top-0 bottom-0 left-0 right-0 bg-opacity-80 p-4 md:p-6 lg:p-12 xl:p-24 overflow-hidden;
+			transform: translate3d(0, 0, 0);
 		}
 		&-photo {
 			@apply w-full h-full flex flex-col justify-center items-center text-white;
 		}
 	}
-
-	figure.zoom {
-		& img:hover {
-			@apply opacity-0;
-		}
-		img {
-			@apply transition-opacity block object-contain w-full h-full;
-		}
-		background-position: 50% 50%;
-		position: relative;
-		object-fit: contain;
-		overflow: hidden;
-		cursor: zoom-in;
-		&:hover {
-			background-size: 200%;
-		}
-		&:active {
-			background-size: 400%;
+	@media (hover: hover) {
+		figure.zoom {
+			& img:hover {
+				@apply opacity-0;
+			}
+			img {
+				@apply transition-opacity block object-contain w-full h-full;
+				-webkit-touch-callout: none;
+			}
+			background-position: 50% 50%;
+			position: relative;
+			object-fit: contain;
+			overflow: hidden;
+			cursor: zoom-in;
+			&:hover {
+				background-size: 200%;
+			}
+			&:active {
+				background-size: 400%;
+			}
 		}
 	}
 </style>
