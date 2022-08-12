@@ -29,8 +29,11 @@ Creating an encryption key:
 ## S3 Settings
 `S3_ENDPOINT`, `S3_BUCKET`. `S3_ACCESS_KEY`, and `S3_SECRET_KEY` are all what you would expect, and should be provided by your S3 host.
 
-`S3_ENCRYPTION_KEY` is a secret key which will be used to encrypt your files if your S3 host supports SSE-C encryption. You can generate a key using the following: `openssl enc -d -a -md sha1 -aes-256-cbc -nosalt -p`
+`S3_ENCRYPTION_KEY` is a secret key which will be used to encrypt your files if your S3 host supports SSE-C encryption. You can generate a key using the following: `openssl enc -d -a -md sha1 -aes-256-cbc -nosalt -p`.
+
 **IF YOU LOSE THIS KEY, YOUR PHOTOS CANNOT BE DECRYPTED. BACK THIS UP AND KEEP IT SAFE**
+
+Also note that you cannot have both unencrypted and encrypted photos in the same Traist Photos instance.
 
 ## JWT/Cookie Settings
 
