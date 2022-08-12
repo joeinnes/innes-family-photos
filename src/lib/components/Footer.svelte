@@ -1,7 +1,7 @@
 <footer>
 	<div class="footer-content">
 		<div>
-			<p>Photos &copy; {import.meta.env.VITE_SITE_OWNER}</p>
+			<p>Photos &copy; {import.meta.env.VITE_SITE_OWNER} {new Date().getFullYear()}</p>
 			<small
 				>We're using <a href="https://photos.traist.co.uk/" target="_blank" class="underline"
 					>Traist Photos</a

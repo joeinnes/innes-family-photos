@@ -1,7 +1,9 @@
+import type { RequestHandler } from '@sveltejs/kit';
+
 import { doesFileExist } from "$lib/s3";
 import { getAuthStatus } from "$lib//auth_middleware";
 
-export const GET = async ({ request, params }) => {
+export const GET: RequestHandler = async ({ request, params }) => {
   let body = {}
   const auth = getAuthStatus(request);
 
@@ -10,13 +12,13 @@ export const GET = async ({ request, params }) => {
       status: 401
     }
   }
+
   if (auth === "admin") {
     body = {
       ...body,
       admin: true
     }
   }
-
 
   const fileExists = await doesFileExist(params.id);
 
@@ -37,6 +39,4 @@ export const GET = async ({ request, params }) => {
     status: 200,
     body
   }
-
-
 }

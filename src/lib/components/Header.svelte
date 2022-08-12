@@ -38,7 +38,7 @@
 		.title {
 			@apply flex-1 w-full;
 			h1 {
-				@apply text-4xl font-black tracking-wide text-neutral-900 mb-2 border-b-4 hover:border-primary-400 inline-block box-border border-transparent transition-colors mb-0;
+				@apply text-4xl font-black tracking-wide text-neutral-900 border-b-4 hover:border-primary-400 inline-block box-border border-transparent transition-colors mb-0;
 			}
 			h2 {
 				@apply text-sm uppercase text-neutral-400 font-bold tracking-wide;

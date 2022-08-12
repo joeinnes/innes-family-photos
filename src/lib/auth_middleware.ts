@@ -30,7 +30,7 @@ export const decrypt = (dataBuffer: Buffer) => {
 type AuthStatus =
   'admin' | 'user' | null;
 
-export const getAuthStatus = (req): AuthStatus => {
+export const getAuthStatus = (req: Request): AuthStatus => {
   let returnVal: AuthStatus = null;
   try {
     const { headers } = req;

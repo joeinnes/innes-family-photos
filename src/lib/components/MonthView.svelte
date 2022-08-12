@@ -3,7 +3,7 @@
 	import { fly } from 'svelte/transition';
 	import { selected } from '$lib/stores/selected';
 	import { MenuAlt2, ViewGrid } from 'svelte-heros';
-	import Image from './Image.svelte';
+
 	export let images: string[];
 	export let month = '';
 	let title = '';

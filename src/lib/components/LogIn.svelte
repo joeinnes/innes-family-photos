@@ -19,7 +19,7 @@
 					active: true,
 					heading: 'Log in failed',
 					message: 'The password was not correct',
-					icon: null
+					colour: 'negative'
 				};
 			}
 		} catch (e) {

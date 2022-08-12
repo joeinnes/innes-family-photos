@@ -60,7 +60,7 @@
 				active: true,
 				message: 'Deleted file',
 				icon: Trash,
-				colour: 'delete'
+				colour: 'negative'
 			};
 			window.location.reload();
 		} catch (e) {
@@ -105,7 +105,7 @@
 			transition:fade={{ duration: 200 }}
 			style="background-color: {colour}f0; "
 			on:scroll|preventDefault
-			on:mousewheel|preventDefault
+			on:wheel|preventDefault
 		>
 			<div class="lightbox-photo relative" on:click|self={close}>
 				<figure
@@ -159,7 +159,7 @@
 					<div class="flex gap-2 justify-end pt-4">
 						<Button colour="neutral" clickHandler={() => dialog.close()}>Cancel</Button>
 
-						<Button colour="delete" clickHandler={deleteFile}>Yes, delete</Button>
+						<Button colour="negative" clickHandler={deleteFile}>Yes, delete</Button>
 					</div>
 				</dialog>
 			</div>

@@ -1,14 +1,15 @@
 import type { RequestHandler, ResponseBody } from '@sveltejs/kit';
 import { listItems, uploadFile } from '$lib/s3';
 import { getAuthStatus } from '$lib/auth_middleware';
+import type { JSONValue } from '@sveltejs/kit/types/private';
 
-export const GET: RequestHandler = async ({ request, url }) => {
+export const GET: RequestHandler = async ({ request }) => {
   let body: ResponseBody = {
     status: 200,
     auth: null,
     list: []
   };
-  const month = url.searchParams.get('month');
+
   const auth = getAuthStatus(request);
 
   if (!auth) {
@@ -25,28 +26,23 @@ export const GET: RequestHandler = async ({ request, url }) => {
     auth
   }
   try {
-    let query = {}
-    if (month) {
-      query = {
-        ...query,
-        prefix: month
-      }
-    } else {
-      query = {
-        ...query,
-        count: 10000
+    const query = {
+      Bucket: process.env.S3_BUCKET || ''
+    };
+    const res = await listItems(query);
+    if (!res?.length) {
+      return {
+        status: 204
       }
     }
-    const { Contents } = await listItems(query);
-    const list = Contents.sort((a, b) => b.Key - a.Key);
+    const list = res.sort((a, b) => a.Key?.localeCompare(b.Key || '') || 0) as JSONValue;
     body = {
       ...body,
-      list
+      list: list
     }
   } catch (e) {
     console.error(e);
     body = {
-      ...body,
       status: 500,
       error: {
         name: 'Server Error',
@@ -59,7 +55,6 @@ export const GET: RequestHandler = async ({ request, url }) => {
   return {
     body
   }
-
 }
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -82,7 +77,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
   try {
     const formData = await request.formData();
-    const files = formData.getAll('files');
+    const files = formData.getAll('files') as File[];
     for (let i = 0; i < files.length; i++) {
       const type = files[i].type;
       const fileName = files[i].name;

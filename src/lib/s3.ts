@@ -1,4 +1,5 @@
 import AWS from 'aws-sdk';
+import type { GetObjectRequest, ListObjectsV2Request, PutObjectRequest } from 'aws-sdk/clients/s3';
 
 AWS.config.update({
   accessKeyId: process.env.S3_ACCESS_KEY,
@@ -6,24 +7,42 @@ AWS.config.update({
 })
 const ep = new AWS.Endpoint(process.env.S3_ENDPOINT || '');
 const s3 = new AWS.S3({ endpoint: ep });
-export const listItems = async ({ count = 1000, prefix = '', startAfter = '' }) => {
-  try {
-    const params = {
-      MaxKeys: count,
-      Prefix: prefix,
+
+export const listItems = async (bucketParams: ListObjectsV2Request) => {
+
+  const items: AWS.S3.Object[] = [];
+  let truncated = true;
+
+  let pageMarker;
+  let nextBucketParams = bucketParams;
+  if (!nextBucketParams.Bucket) {
+    nextBucketParams = {
+      ...bucketParams,
       Bucket: process.env.S3_BUCKET || '',
-      StartAfter: startAfter
-    };
-    const list = await s3.listObjectsV2(params).promise();
-    return list;
-  } catch (e) {
-    console.error(e);
+    }
   }
+  while (truncated) {
+    try {
+      const response = await s3.listObjectsV2(nextBucketParams).promise();
+      response?.Contents?.forEach((item) => {
+        items.push(item);
+      });
+      truncated = response.IsTruncated ?? false;
+      if (truncated && response && response.Contents) {
+        pageMarker = response.Contents.slice(-1)[0].Key;
+        nextBucketParams.StartAfter = pageMarker;
+      }
+    } catch (err) {
+      console.log("Error", err);
+      truncated = false;
+    }
+  }
+  return items;
 }
 
 export const uploadFile = async (file: Buffer, key: string, type: string) => {
   try {
-    let params = {
+    let params: PutObjectRequest = {
       Bucket: process.env.S3_BUCKET || '',
       Body: file,
       Key: key,
@@ -50,7 +69,7 @@ export const getFile = async (key: string) => {
     if (!key) {
       throw new Error('No key provided');
     }
-    let params = {
+    let params: GetObjectRequest = {
       Bucket: process.env.S3_BUCKET || '',
       Key: key
     };
@@ -62,11 +81,9 @@ export const getFile = async (key: string) => {
         SSECustomerKey: ssecKey
       }
     }
-
     const res = await s3.getObject(params).promise();
     return res;
   } catch (e) {
-    console.error(e);
     return e;
   }
 }
@@ -98,9 +115,10 @@ export const doesFileExist = async (key: string) => {
       Key: key
     }
     const res = await s3.headObject(params).promise();
-    return true;
+    return !!res;
   } catch (e) {
     //console.error(e);
     return false;
   }
 }
+

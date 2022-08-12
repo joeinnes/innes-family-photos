@@ -1,7 +1,8 @@
 import { deleteFile, getFile } from "$lib/s3";
 import { getAuthStatus } from "$lib/auth_middleware";
-
-export const GET = async ({ params, request }) => {
+import type { GetObjectOutput } from "aws-sdk/clients/s3";
+import type { RequestHandler } from "@sveltejs/kit";
+export const GET: RequestHandler = async ({ params, request }) => {
   const auth = getAuthStatus(request);
   if (!auth) {
     return {
@@ -11,10 +12,8 @@ export const GET = async ({ params, request }) => {
 
   const { id } = params;
   try {
-    const file = await getFile(id);
-    if (file.statusCode) {
-      throw file;
-    }
+    const file = await getFile(id) as GetObjectOutput & { code: number, Body: Buffer };
+    if (file.code) throw file;
     return {
       status: 200,
       headers: {
@@ -27,12 +26,12 @@ export const GET = async ({ params, request }) => {
   } catch (e) {
     console.error(e);
     return {
-      status: e.statusCode
+      status: 500
     }
   }
 }
 
-export const DELETE = async ({ params, request }) => {
+export const DELETE: RequestHandler = async ({ params, request }) => {
   const auth = getAuthStatus(request);
 
   if (!auth) {
@@ -49,7 +48,7 @@ export const DELETE = async ({ params, request }) => {
 
   const { id } = params;
   try {
-    const file = await deleteFile(id);
+    await deleteFile(id);
     return {
       status: 200,
     }

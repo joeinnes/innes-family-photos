@@ -1,13 +1,18 @@
+import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
 
-const blank = {
-  icon: null,
-  heading: '',
-  message: '',
+interface Notification {
+  icon?: typeof SvelteComponent,
+  heading?: string,
+  message?: string,
+  active: boolean,
+  colour: string,
+  callback?: () => void;
+
+}
+const blank: Notification = {
   active: false,
   colour: 'primary',
-  callback() { return }
-
 };
 
 export const notify = writable(blank);

@@ -2,10 +2,15 @@
 	import { fly } from 'svelte/transition';
 	import { notify } from '$lib/stores/notify';
 	export let colour = 'primary';
-	const colours = {
+
+	interface ColourMap {
+		[key: string]: string;
+	}
+
+	const colours: ColourMap = {
 		primary: 'bg-primary-100 text-primary-700',
 		success: 'bg-green-100 text-green-700',
-		delete: 'bg-red-100 text-red-700'
+		negative: 'bg-red-100 text-red-700'
 	};
 	$: {
 		colour = $notify.colour;
