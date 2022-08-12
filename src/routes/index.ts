@@ -1,16 +1,14 @@
 import type { RequestHandler, ResponseBody } from '@sveltejs/kit';
 import { listItems, uploadFile } from '$lib/s3';
-import { getAuthStatus } from '$lib/auth_middleware';
 import type { JSONValue } from '@sveltejs/kit/types/private';
 
-export const GET: RequestHandler = async ({ request }) => {
+export const GET: RequestHandler = async ({ locals }) => {
   let body: ResponseBody = {
     status: 200,
-    auth: null,
     list: []
   };
 
-  const auth = getAuthStatus(request);
+  const auth = locals.auth;
 
   if (!auth) {
     return {
@@ -21,28 +19,41 @@ export const GET: RequestHandler = async ({ request }) => {
     }
   }
 
-  body = {
-    ...body,
-    auth
-  }
   try {
     const query = {
       Bucket: process.env.S3_BUCKET || ''
     };
+
     const res = await listItems(query);
+
     if (!res?.length) {
       return {
+        body,
         status: 204
       }
     }
-    const list = res.sort((a, b) => a.Key?.localeCompare(b.Key || '') || 0) as JSONValue;
+
+    const unsortedList = res.filter(el => {
+      if (el && el.Key && el.Key.substring(0, 11) !== 'magiclinks/') {
+        return true;
+      }
+      return false;
+    })
+    if (!unsortedList?.length) {
+      return {
+        body,
+        status: 204
+      }
+    }
+    const list = unsortedList.sort((a, b) => a.Key?.localeCompare(b.Key || '') || 0) as JSONValue
     body = {
       ...body,
       list: list
     }
   } catch (e) {
     console.error(e);
-    body = {
+    return {
+      body,
       status: 500,
       error: {
         name: 'Server Error',
@@ -53,12 +64,12 @@ export const GET: RequestHandler = async ({ request }) => {
   }
 
   return {
-    body
+    status: 500
   }
 }
 
-export const POST: RequestHandler = async ({ request }) => {
-  const auth = getAuthStatus(request);
+export const POST: RequestHandler = async ({ request, locals }) => {
+  const auth = locals.auth;
   if (!auth) {
     return {
       status: 401,

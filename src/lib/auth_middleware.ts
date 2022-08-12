@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import { deleteFile, doesFileExist, uploadFile } from './s3';
 
 const algorithm = 'aes-256-gcm';
 const key = Buffer.from(process.env.ENCRYPTION_KEY || crypto.randomBytes(32));
@@ -27,6 +28,7 @@ export const decrypt = (dataBuffer: Buffer) => {
   decipher.setAuthTag(authTag)
   return Buffer.concat([decipher.update(dataBuffer.slice(ivSize + 17)), decipher.final()]).toString('utf-8');
 }
+
 type AuthStatus =
   'admin' | 'user' | null;
 
@@ -56,4 +58,36 @@ export const getAuthStatus = (req: Request): AuthStatus => {
     console.log(e);
     return null;
   }
+}
+
+export const validateMagicLink = async (magiclink: string) => {
+  try {
+    type TokenType = 'persistent' | 'temp' | null;
+    let tokenType: TokenType = null; if (await doesFileExist('magiclinks/' + magiclink + '-temp')) {
+      tokenType = 'temp';
+    } else if (await doesFileExist('magiclinks/' + magiclink + '-persist')) {
+      tokenType = 'persistent'
+    }
+    if (!tokenType) throw 'Token not valid';
+    if (tokenType === 'temp') {
+      deleteFile('magiclinks/' + magiclink + '-temp');
+    }
+    const encryptedPass = encrypt(Buffer.from(process.env.USER_PASSWORD || ''));
+    const token = jwt.sign({ password: encryptedPass }, process.env.ENCRYPTION_SECRET, {
+      expiresIn: `${process.env.COOKIE_VALIDITY} days`
+    })
+    const d = new Date();
+    const expiryDays = parseInt(process.env.COOKIE_VALIDITY || '7', 10);
+    d.setTime(d.getTime() + (expiryDays * 24 * 60 * 60 * 1000));
+    return `token=${token};expires=${d.toUTCString()};path=/;Secure; HttpOnly;SameSite=Strict`;
+  } catch (e) {
+    return '';
+  }
+}
+
+export const generateMagicLink = async (persistent: boolean) => {
+  const randomBytes = crypto.randomBytes(12).toString('hex');
+  const fileName = `magiclinks/${randomBytes}-${persistent ? 'persist' : 'temp'}`;
+  await uploadFile(Buffer.from(randomBytes), fileName, 'text/plain')
+  return randomBytes;
 }

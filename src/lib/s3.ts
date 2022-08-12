@@ -98,6 +98,7 @@ export const deleteFile = async (key: string) => {
       Key: key
     }
     const res = await s3.deleteObject(params).promise();
+
     return res;
   } catch (e) {
     console.error(e);
@@ -110,14 +111,23 @@ export const doesFileExist = async (key: string) => {
     if (!key) {
       throw new Error('No key provided');
     }
-    const params = {
+    let params = {
       Bucket: process.env.S3_BUCKET || '',
       Key: key
     }
+    if (process.env.S3_ENCRYPTION_KEY) {
+      const ssecKey = Buffer.alloc(32, process.env.S3_ENCRYPTION_KEY);
+      params = {
+        ...params,
+        SSECustomerAlgorithm: 'AES256',
+        SSECustomerKey: ssecKey
+      }
+    }
     const res = await s3.headObject(params).promise();
+    console.log(res)
     return !!res;
   } catch (e) {
-    //console.error(e);
+    console.error(e);
     return false;
   }
 }

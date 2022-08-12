@@ -26,7 +26,8 @@ export const GET: RequestHandler = async ({ params, request }) => {
   } catch (e) {
     console.error(e);
     return {
-      status: 500
+      status: 500,
+      body: { auth }
     }
   }
 }
@@ -55,7 +56,10 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
   } catch (e) {
     console.error(e);
     return {
-      status: 500
+      status: 500,
+      body: {
+        auth
+      }
     }
   }
 }

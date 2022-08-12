@@ -4,19 +4,19 @@
 	import { selected } from '$lib/stores/selected';
 	import { MenuAlt2, ViewGrid } from 'svelte-heros';
 
-	export let images: string[];
-	export let month = '';
-	let title = '';
+	type Image = {
+		key: string;
+		fullKey: string;
+		prefix: string;
+	};
+	export let images: Image[];
+
+	export let title = '';
+
 	let grid = false;
 	let root: HTMLElement;
 	let loaded = false;
-	const getMonthTitle = (month: string) => {
-		try {
-			return new Date(month).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-		} catch (e) {
-			return 'Error';
-		}
-	};
+
 	const preload = (src: string) => {
 		return new Promise(function (resolve, reject) {
 			let img = new Image();
@@ -28,6 +28,9 @@
 	let observer: IntersectionObserver;
 
 	onMount(() => {
+		if (!root) {
+			return;
+		}
 		observer = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
@@ -45,7 +48,6 @@
 	onDestroy(() => {
 		observer?.disconnect();
 	});
-	$: title = getMonthTitle(month);
 </script>
 
 {#if title !== 'Invalid Date'}
@@ -61,8 +63,8 @@
 		</div>
 		<div class="gallery not-prose" class:gallery-grid={grid}>
 			{#if loaded}
-				{#each images as imageKey}
-					{@const imgUrl = `/file/${month}/${imageKey}`}
+				{#each images as image}
+					{@const imgUrl = `/file/${image.fullKey}`}
 					{#await preload(imgUrl)}
 						<div
 							class="flex justify-center items-center w-full h-64 aspect-video animate-pulse bg-gray-300 rounded dark:bg-gray-700"
@@ -85,7 +87,7 @@
 								src={imgUrl}
 								class="cursor-pointer"
 								alt={imgUrl}
-								on:click={() => ($selected = `${month}/${imageKey}`)}
+								on:click={() => ($selected = `${image.fullKey}`)}
 								transition:fly={{ y: 50, duration: 200 }}
 							/>
 						</div>

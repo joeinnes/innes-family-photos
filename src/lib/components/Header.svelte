@@ -1,15 +1,16 @@
 <script lang="ts">
-	import { invalidate } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 	import { Logout } from 'svelte-heros';
 	import FileUpload from '$lib/components/FileUpload.svelte';
 	import Button from '$lib/components/Button.svelte';
-	import { authStatus } from '$lib/stores/authStatus';
+	import { session } from '$app/stores';
 
 	const logOut = async () => {
 		await fetch('/api/auth', {
 			method: 'POST'
 		});
-		invalidate('/');
+		await invalidate('/');
+		goto('/');
 	};
 </script>
 
@@ -19,10 +20,13 @@
 		<h2>{import.meta.env.VITE_SITE_TAGLINE}</h2>
 	</div>
 	<div class="links">
+		{#if $session.auth === 'admin'}
+			<a href="/magic-link">Magic Links</a>
+		{/if}
 		<a href="/about">About</a>
 	</div>
 	<div class="action-buttons">
-		{#if $authStatus === 'admin'}
+		{#if $session.auth === 'admin'}
 			<FileUpload />
 		{/if}
 
@@ -49,7 +53,7 @@
 		}
 	}
 	.links {
-		@apply pr-4;
+		@apply flex gap-4 pr-4;
 		a {
 			@apply text-sm uppercase text-neutral-400 font-bold tracking-wide  hover:text-neutral-700 transition-colors;
 		}

@@ -1,50 +1,72 @@
 <script lang="ts">
 	import Lightbox from '$lib/components/Lightbox.svelte';
-	import MonthView from '$lib/components/MonthView.svelte';
-	import LogIn from '$lib/components/LogIn.svelte';
-	import { authStatus } from '$lib/stores/authStatus';
-	import type { AuthStatus } from '$lib/stores/authStatus';
+	import Gallery from '$lib/components/Gallery.svelte';
 
-	export let auth: AuthStatus = null;
+	import { session } from '$app/stores';
+	const { auth } = $session;
 	export let list = [
 		{
 			Key: ''
 		}
 	];
 
-	let shouldDisplay = false;
+	const getMonthTitle = (month: string) => {
+		try {
+			return new Date(month).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+		} catch (e) {
+			return 'Error';
+		}
+	};
 
+	interface Image {
+		key: string;
+		prefix: string;
+		fullKey: string;
+	}
 	interface ImagesMap {
-		[month: string]: string[];
+		[month: string]: Image[];
 	}
 	let images: ImagesMap = {};
-
-	$: if (auth) {
-		shouldDisplay = true;
-		$authStatus = auth;
-	}
 	$: {
 		list.forEach((el) => {
 			let month = el.Key.substring(0, 7);
 			let fileName = el.Key.substring(8);
 			if (images[month]) {
-				if (!images[month].includes(fileName)) {
-					images[month] = [...images[month], fileName];
+				if (!images[month].find((el) => el.key === fileName)) {
+					images[month] = [
+						...images[month],
+						{
+							key: fileName,
+							prefix: month,
+							fullKey: el.Key
+						}
+					];
 				}
 			} else {
-				images[month] = [fileName];
+				images[month] = [
+					{
+						key: fileName,
+						prefix: month,
+						fullKey: el.Key
+					}
+				];
 			}
 		});
 	}
 </script>
 
-{#if !shouldDisplay}
-	<LogIn />
-{:else if !Object.keys(images).length}
-	<h2>No photos uploaded!</h2>
+{#if !Object.keys(images).length}
+	<section class="prose prose-xl">
+		<h3>No photos uploaded!</h3>
+		{#if auth === 'admin'}
+			<p>To get started, click the 'Upload Photos' button on the top right.</p>
+		{:else}
+			<p>The site owner has not yet uploaded any photos.</p>
+		{/if}
+	</section>
 {:else}
 	{#each Object.keys(images).sort().reverse() as month}
-		<MonthView images={images[month]} {month} />
+		<Gallery images={images[month]} title={getMonthTitle(month)} />
 	{/each}
 {/if}
 
