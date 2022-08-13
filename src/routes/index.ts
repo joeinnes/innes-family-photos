@@ -19,6 +19,7 @@ export const GET: RequestHandler = async ({ locals }) => {
     }
   }
 
+
   try {
     const query = {
       Bucket: process.env.S3_BUCKET || ''
@@ -33,22 +34,30 @@ export const GET: RequestHandler = async ({ locals }) => {
       }
     }
 
+
     const unsortedList = res.filter(el => {
       if (el && el.Key && el.Key.substring(0, 11) !== 'magiclinks/') {
         return true;
       }
       return false;
-    })
+    });
+
     if (!unsortedList?.length) {
       return {
         body,
         status: 204
       }
     }
+
     const list = unsortedList.sort((a, b) => a.Key?.localeCompare(b.Key || '') || 0) as JSONValue
+
     body = {
       ...body,
       list: list
+    }
+    return {
+      status: 200,
+      body
     }
   } catch (e) {
     console.error(e);

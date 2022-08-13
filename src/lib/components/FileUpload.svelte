@@ -2,6 +2,7 @@
 	import { notify } from '$lib/stores/notify';
 	import { Camera, CheckCircle } from 'svelte-heros';
 	import Button from '$lib/components/Button.svelte';
+	import { invalidate } from '$app/navigation';
 
 	export let open = false;
 	let dialog: HTMLDialogElement;
@@ -50,7 +51,7 @@
 				heading: 'Files uploaded!',
 				callback: () => {
 					form.reset();
-					window.location.reload();
+					invalidate('/');
 				}
 			};
 		} catch (e) {

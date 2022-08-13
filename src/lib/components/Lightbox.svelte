@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/env';
+	import { session } from '$app/stores';
 	import { invalidate, goto } from '$app/navigation';
 	import Button from '$lib/components/Button.svelte';
 	import { fade } from 'svelte/transition';
@@ -8,13 +9,8 @@
 	import Messenger from './icons/Messenger.svelte';
 	import WhatsApp from './icons/WhatsApp.svelte';
 	import { notify } from '$lib/stores/notify';
-	import { authStatus } from '$lib/stores/authStatus';
-	import type { AuthStatus } from '$lib/stores/authStatus';
 
 	export let canClose = true;
-
-	let copied = false;
-	let touched = false;
 
 	let el: HTMLImageElement;
 	let dialog: HTMLDialogElement;
@@ -144,7 +140,7 @@
 						class="font-normal no-underline"
 						><Button colour="neutral"><Messenger slot="icon" />Share on Messenger</Button></a
 					>
-					{#if $authStatus === 'admin'}
+					{#if $session.auth === 'admin'}
 						<Button colour="neutral" clickHandler={() => dialog.showModal()}
 							><Trash slot="icon" />Delete</Button
 						>

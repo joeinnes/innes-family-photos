@@ -4,7 +4,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import { notify } from '$lib/stores/notify';
 	import { invalidate } from '$app/navigation';
-	import { Link, Trash } from 'svelte-heros';
+	import { Link, Trash, XCircle } from 'svelte-heros';
 
 	let creating = false;
 	type MagicLinkType = 'persist' | 'temp';
@@ -80,8 +80,8 @@
 		>
 	</div>
 
-	<div class="py-1 bg-primary-200 rounded-lg">
-		<table class="not-prose table w-full" class:deleting>
+	<div class="py-1 bg-primary-100 rounded-lg border border-primary-100 ">
+		<table class="not-prose table w-full bg-white" class:deleting>
 			<thead><tr><th>Magic Link</th><th>Type</th><th /></tr></thead>
 			{#each magicLinks as link}<tr transition:fly
 					><td>{import.meta.env.VITE_BASE_URL}/magic-link/{link.link}</td><td class="capitalize"
@@ -89,7 +89,7 @@
 					><td
 						on:click={() => deleteMagicLink(link.link + '-' + link.type)}
 						class="cursor-pointer"
-						class:deleting>&times;</td
+						class:deleting><XCircle /></td
 					></tr
 				>{:else}<tr><td colspan="2">No magic links!</td></tr>{/each}
 		</table>
@@ -114,19 +114,19 @@
 	}
 
 	.table {
-		@apply border-collapse table-auto w-full text-sm border-primary-100 border-l border-r my-0;
+		@apply border-collapse table-auto w-full text-sm  my-0;
 		tr {
 			@apply border-b border-primary-100;
+			&:nth-child(even) {
+				@apply bg-neutral-50;
+			}
 		}
 		td,
 		th {
 			@apply p-2;
 		}
 		thead {
-			@apply p-2 bg-primary-200;
-		}
-		tbody {
-			@apply bg-primary-100;
+			@apply p-2 bg-primary-100;
 		}
 	}
 </style>
