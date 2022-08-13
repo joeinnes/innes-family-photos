@@ -32,12 +32,7 @@
 
 			const formData = new FormData();
 			for (let file of files) {
-				const { lastModified } = file;
-				const LMD = new Date(lastModified);
-				const month = (LMD.getMonth() + 1).toString().padStart(2, '0');
-				const year = LMD.getFullYear();
-				const fileName = `${year}-${month}/${file.name}`;
-				formData.append('files', file, fileName);
+				formData.append('files', file);
 			}
 			await fetch('/', {
 				method: 'POST',

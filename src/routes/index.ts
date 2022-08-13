@@ -1,5 +1,6 @@
 import type { RequestHandler, ResponseBody } from '@sveltejs/kit';
 import { listItems, uploadFile } from '$lib/s3';
+import exif from "jpeg-exif";
 import type { JSONValue } from '@sveltejs/kit/types/private';
 
 export const GET: RequestHandler = async ({ locals }) => {
@@ -71,10 +72,6 @@ export const GET: RequestHandler = async ({ locals }) => {
       list: []
     }
   }
-
-  return {
-    status: 500
-  }
 }
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -99,10 +96,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     const formData = await request.formData();
     const files = formData.getAll('files') as File[];
     for (let i = 0; i < files.length; i++) {
-      const type = files[i].type;
-      const fileName = files[i].name;
-      const arrayBuffer = await files[i].arrayBuffer();
+      const file = files[i];
+      const arrayBuffer = await file.arrayBuffer();
       const fileBuffer = Buffer.from(arrayBuffer);
+      const type = file.type;
+      let fileName
+      try {
+        const data = exif.fromBuffer(fileBuffer);
+        const exifDTO = data.SubExif.DateTimeOriginal
+        const [date, time] = exifDTO.split(' ');
+        const [year, month, day] = date.split(':');
+        const [hour, minute, second] = time.split(':');
+        fileName = `${year}-${month}/${day}-${hour}-${minute}-${second}-${file.name}`
+      } catch (e) {
+        const { lastModified } = file;
+        const LMD = new Date(lastModified);
+        const month = (LMD.getMonth() + 1).toString().padStart(2, '0');
+        const year = LMD.getFullYear();
+        const fileName = `${year}-${month}/${file.name}`;
+      }
       uploadFile(fileBuffer, fileName, type)
     }
     return {
