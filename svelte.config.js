@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-//import adapter from '@sveltejs/adapter-auto';
+// import adapter from '@sveltejs/adapter-auto';
 import adapter from '@sveltejs/adapter-node';
 
 import preprocess from 'svelte-preprocess';
@@ -16,7 +16,9 @@ const config = {
 	],
 
 	kit: {
-		adapter: adapter({ out: 'dist' })
+		adapter: adapter({
+			out: 'dist'
+		})
 	}
 };
 
