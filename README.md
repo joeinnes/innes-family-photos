@@ -61,3 +61,9 @@ Both of these can be generated at random at a site like https://randomkeygen.com
 `VITE_SITE_OWNER` is the name of the site owner
 
 `VITE_SITE_CONTACT` is the email address for the site owner.
+
+# Hosting
+
+Vercel will allow you to host the site for free, but they limit payloads for serverless workers to 4.5MB, so you won't be able to upload very much very quickly.
+
+Cloudflare won't build Traist photos as they use a non-standard Node build which means a number of different libraries crucial to the application are not available.

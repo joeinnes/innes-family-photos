@@ -34,10 +34,15 @@
 			for (let file of files) {
 				formData.append('files', file);
 			}
-			await fetch('/', {
+
+			const res = await fetch('/', {
 				method: 'POST',
 				body: formData
 			});
+
+			if (!res.ok) {
+				throw new Error('Files not uploaded.');
+			}
 
 			$notify = {
 				active: true,
@@ -53,9 +58,9 @@
 			$notify = {
 				active: true,
 				icon: CheckCircle,
-				colour: 'success',
-				heading: 'Files not uploaded!',
-				message: 'There was an error uploading the files.'
+				colour: 'negative',
+				heading: 'Upload error',
+				message: 'There was an error during the upload.'
 			};
 			console.error(e);
 		} finally {
