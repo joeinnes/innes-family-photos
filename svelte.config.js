@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // import adapter from '@sveltejs/adapter-auto';
+// Although auto works locally, seems in CI/CD environments, node is not available as an adapter unless installed manually.
 import adapter from '@sveltejs/adapter-node';
 
 import preprocess from 'svelte-preprocess';

@@ -107,13 +107,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         const [date, time] = exifDTO.split(' ');
         const [year, month, day] = date.split(':');
         const [hour, minute, second] = time.split(':');
-        fileName = `${year}-${month}/${day}-${hour}-${minute}-${second}-${file.name}`
+        fileName = `${year}-${month}/${day}-${hour}-${minute}-${second}-${file.name}`;
       } catch (e) {
+        console.log('failed to read EXIF data', e)
         const { lastModified } = file;
         const LMD = new Date(lastModified);
         const month = (LMD.getMonth() + 1).toString().padStart(2, '0');
         const year = LMD.getFullYear();
-        const fileName = `${year}-${month}/${file.name}`;
+        const day = LMD.getDate();
+        const hour = LMD.getHours();
+        const minute = LMD.getMinutes();
+        const second = LMD.getSeconds();
+        fileName = `${year}-${month}/${day}-${hour}-${minute}-${second}-${file.name}`;
       }
       uploadFile(fileBuffer, fileName, type)
     }
