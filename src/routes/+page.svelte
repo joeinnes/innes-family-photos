@@ -5,6 +5,7 @@
   import { page } from '$app/stores';
   import Lightbox from '$lib/components/Lightbox.svelte';
   import Gallery from '$lib/components/Gallery.svelte';
+  import Timeline from '$lib/components/Timeline.svelte';
 
   export let data: PageData;
   const { auth } = $page.data;
@@ -73,6 +74,7 @@
     {/if}
   </section>
 {:else}
+  <Timeline {images} />
   {#each Object.keys(images).sort().reverse() as month}
     <Gallery images={images[month]} title={getMonthTitle(month)} />
   {/each}
