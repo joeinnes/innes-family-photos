@@ -63,7 +63,7 @@
   };
 </script>
 
-<section class="prose">
+<section class="prose prose-primary my-4">
   <h1>Magic Links</h1>
   <p>
     Click the buttons below to generate a 'magic link', which will authenticate users without the

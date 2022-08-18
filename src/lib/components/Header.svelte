@@ -21,6 +21,7 @@
     <h1><a href="/">{import.meta.env.VITE_SITE_NAME}</a></h1>
     <h2>{import.meta.env.VITE_SITE_TAGLINE}</h2>
   </div>
+
   <div class="links">
     {#if auth === 'admin'}
       <a href="/magic-link">Magic Links</a>

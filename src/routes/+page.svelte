@@ -28,6 +28,7 @@
     [month: string]: Image[];
   }
   let images: ImagesMap = {};
+
   $: {
     list
       .sort((a: S3Object, b: S3Object) => {
