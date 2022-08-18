@@ -5,8 +5,9 @@ import { listItems, uploadFile } from '$lib/s3';
 import { ExifParserFactory } from 'ts-exif-parser';
 
 
-export const load: PageServerLoad = async ({ locals }) => {
-  const auth = locals.auth;
+export const load: PageServerLoad = async ({ parent }) => {
+  const { auth } = await parent();
+  console.log(auth);
   let list: S3Object[] = [];
   if (!auth) {
     throw error(401, 'Not authorised');

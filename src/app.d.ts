@@ -4,15 +4,11 @@
 
 
 declare namespace App {
-	type AuthStatus = 'admin' | 'user' | null
-	interface Locals {
-		auth: AuthStatus
-	}
+
+	// interface Locals {}
 	// interface Platform {}
 	// interface PrivateEnv {}
 	// interface PublicEnv {}
-	interface Session {
-		auth: AuthStatus
-	}
+	// interface Session {}
 	// interface Stuff {}
 }
