@@ -3,6 +3,7 @@ import type { Object as S3Object } from 'aws-sdk/clients/s3';
 import { error } from '@sveltejs/kit';
 import { listItems, uploadFile } from '$lib/s3';
 import { ExifParserFactory } from 'ts-exif-parser';
+import { getAuthStatus } from '$lib/auth_middleware';
 
 
 export const load: PageServerLoad = async ({ parent }) => {
@@ -47,8 +48,8 @@ export const load: PageServerLoad = async ({ parent }) => {
     throw error(500, 'Something went wrong');
   }
 }
-export const POST: Action = async ({ request, locals }) => {
-  const auth = locals.auth;
+export const POST: Action = async ({ request }) => {
+  const auth = getAuthStatus(request);
   if (!auth) {
     throw error(401, 'Not Logged In')
 
@@ -63,6 +64,7 @@ export const POST: Action = async ({ request, locals }) => {
       const file = files[i];
       const arrayBuffer = await file.arrayBuffer();
       const fileBuffer = Buffer.from(arrayBuffer);
+      const type = file.type;
       let fileName
       try {
         const parser = ExifParserFactory.create(fileBuffer);
@@ -71,24 +73,27 @@ export const POST: Action = async ({ request, locals }) => {
           throw new Error('No DateTimeOriginal');
         }
         const exifDTO = parsed.tags.DateTimeOriginal
-        const [date, time] = exifDTO.split(' ');
-        const [year, month, day] = date.split(':');
-        const [hour, minute, second] = time.split(':');
+        const DateTime = new Date(exifDTO);
+        const month = (DateTime.getMonth() + 1).toString().padStart(2, '0');
+        const year = DateTime.getFullYear();
+        const day = DateTime.getDate();
+        const hour = DateTime.getHours();
+        const minute = DateTime.getMinutes();
+        const second = DateTime.getSeconds();
         fileName = `${year}-${month}/${day}-${hour}-${minute}-${second}-${file.name}`;
       } catch (e) {
         console.log('failed to read EXIF data - using Last Modified Date', e)
         const { lastModified } = file;
-        const LMD = new Date(lastModified);
-        const month = (LMD.getMonth() + 1).toString().padStart(2, '0');
-        const year = LMD.getFullYear();
-        const day = LMD.getDate();
-        const hour = LMD.getHours();
-        const minute = LMD.getMinutes();
-        const second = LMD.getSeconds();
+        const DateTime = new Date(lastModified);
+        const month = (DateTime.getMonth() + 1).toString().padStart(2, '0');
+        const year = DateTime.getFullYear();
+        const day = DateTime.getDate();
+        const hour = DateTime.getHours();
+        const minute = DateTime.getMinutes();
+        const second = DateTime.getSeconds();
         fileName = `${year}-${month}/${day}-${hour}-${minute}-${second}-${file.name}`;
       }
-      console.log(fileName)
-      // uploadFile(fileBuffer, fileName, type)
+      uploadFile(fileBuffer, fileName, type)
     }
     return;
   } catch (e) {

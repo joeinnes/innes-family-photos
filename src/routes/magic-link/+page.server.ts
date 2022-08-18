@@ -1,11 +1,11 @@
 import type { PageServerLoad } from './$types';
-import { generateMagicLink } from "$lib/auth_middleware"
+import { generateMagicLink, getAuthStatus } from "$lib/auth_middleware"
 import { listItems } from "$lib/s3";
 import type { Action } from "@sveltejs/kit";
 import { error } from "@sveltejs/kit";
 
-export const load: PageServerLoad = async ({ locals }) => {
-  const { auth } = locals;
+export const load: PageServerLoad = async ({ request }) => {
+  const auth = getAuthStatus(request);
   if (!auth) {
     throw error(401, 'Not authorised');
   } else if (auth !== 'admin') {
@@ -30,8 +30,8 @@ export const load: PageServerLoad = async ({ locals }) => {
   return { magicLinks }
 }
 
-export const POST: Action = async ({ url, locals }) => {
-  const { auth } = locals;
+export const POST: Action = async ({ url, request }) => {
+  const auth = getAuthStatus(request);
   if (!auth) {
     throw error(401, 'Not authorised');
   } else if (auth !== 'admin') {
