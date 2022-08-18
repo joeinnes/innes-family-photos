@@ -27,7 +27,7 @@
         }
       });
     } catch (e) {
-      console.log(e);
+      console.error(e);
     } finally {
       await invalidate('/magic-link');
       creating = false;
@@ -56,7 +56,7 @@
         icon: Trash
       };
     } catch (e) {
-      console.log(e);
+      console.error(e);
     } finally {
       deleting = false;
     }

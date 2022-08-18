@@ -32,8 +32,8 @@ export const listItems = async (bucketParams: ListObjectsV2Request) => {
         pageMarker = response.Contents.slice(-1)[0].Key;
         nextBucketParams.StartAfter = pageMarker;
       }
-    } catch (err) {
-      console.log("Error", err);
+    } catch (e) {
+      console.error(e);
       truncated = false;
     }
   }
@@ -124,7 +124,7 @@ export const doesFileExist = async (key: string) => {
       }
     }
     const res = await s3.headObject(params).promise();
-    console.log(res)
+
     return !!res;
   } catch (e) {
     console.error(e);

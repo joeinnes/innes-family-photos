@@ -5,10 +5,8 @@ import { listItems, uploadFile } from '$lib/s3';
 import { ExifParserFactory } from 'ts-exif-parser';
 import { getAuthStatus } from '$lib/auth_middleware';
 
-
-export const load: PageServerLoad = async ({ parent }) => {
-  const { auth } = await parent();
-  console.log(auth);
+export const load: PageServerLoad = async ({ request }) => {
+  const auth = getAuthStatus(request);
   let list: S3Object[] = [];
   if (!auth) {
     throw error(401, 'Not authorised');
@@ -82,7 +80,7 @@ export const POST: Action = async ({ request }) => {
         const second = DateTime.getSeconds();
         fileName = `${year}-${month}/${day}-${hour}-${minute}-${second}-${file.name}`;
       } catch (e) {
-        console.log('failed to read EXIF data - using Last Modified Date', e)
+        console.error('failed to read EXIF data - using Last Modified Date', e)
         const { lastModified } = file;
         const DateTime = new Date(lastModified);
         const month = (DateTime.getMonth() + 1).toString().padStart(2, '0');
@@ -97,7 +95,7 @@ export const POST: Action = async ({ request }) => {
     }
     return;
   } catch (e) {
-    console.log(e)
+    console.error(e)
     throw error(500, 'Could not upload files.')
   }
 }

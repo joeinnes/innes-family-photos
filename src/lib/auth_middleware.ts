@@ -55,7 +55,7 @@ export const getAuthStatus = (req: Request): AuthStatus => {
     }
     return returnVal;
   } catch (e) {
-    console.log(e);
+    console.error(e);
     return null;
   }
 }
