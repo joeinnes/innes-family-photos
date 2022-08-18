@@ -1,53 +1,39 @@
+import type { PageServerLoad } from './$types';
 import { validateMagicLink } from "$lib/auth_middleware";
 import { deleteFile } from "$lib/s3";
-import type { RequestHandler, ResponseBody } from "@sveltejs/kit";
+import { error, redirect } from "@sveltejs/kit";
+import type { Action } from "@sveltejs/kit";
 
-export const GET: RequestHandler = async ({ params, url }) => {
+export const load: PageServerLoad = async ({ params, url, setHeaders }) => {
   const { token } = params;
   const cookieString = await validateMagicLink(token);
   if (!cookieString) {
-    return {
-      status: 401
-    }
+    throw error(401, 'Not authorised');
   }
-  let response: ResponseBody = {
-    headers: {
-      'Set-Cookie': cookieString
-    }
-  }
-  const ref = url.searchParams.get('redirect') || '/';
-  response = {
-    ...response,
-    status: 303,
-    redirect: ref
-  }
-  return response;
+  setHeaders({
+    'Set-Cookie': cookieString
+  })
 
+  const ref = url.searchParams.get('redirect') || '/';
+  if (ref) {
+    throw redirect(303, ref);
+  }
+  return;
 }
 
-export const DELETE: RequestHandler = async ({ locals, params }) => {
+export const DELETE: Action = async ({ locals, params }) => {
   const { auth
   } = locals;
   if (!auth) {
-    return {
-      status: 401
-    }
+    throw error(401, 'Not authorised');
   } else if (auth !== 'admin') {
-    return {
-      status: 403
-    }
+    throw error(403, 'Not authorised');
   }
-
   try {
     const { token } = params;
-
     await deleteFile(`magiclinks/${token}`);
-    return {
-      status: 200
-    }
+    return;
   } catch (e) {
-    return {
-      status: 500
-    }
+    throw error(500, 'Could not delete file.')
   }
 }

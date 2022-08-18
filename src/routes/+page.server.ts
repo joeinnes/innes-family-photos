@@ -1,25 +1,16 @@
-import type { RequestHandler, ResponseBody } from '@sveltejs/kit';
+import type { PageServerLoad, Action } from './$types';
+import type { Object as S3Object } from 'aws-sdk/clients/s3';
+import { error } from '@sveltejs/kit';
 import { listItems, uploadFile } from '$lib/s3';
-import exif from "jpeg-exif";
-import type { JSONValue } from '@sveltejs/kit/types/private';
+import { ExifParserFactory } from 'ts-exif-parser';
 
-export const GET: RequestHandler = async ({ locals }) => {
-  let body: ResponseBody = {
-    status: 200,
-    list: []
-  };
 
+export const load: PageServerLoad = async ({ locals }) => {
   const auth = locals.auth;
-
+  let list: S3Object[] = [];
   if (!auth) {
-    return {
-      status: 401,
-      error: {
-        message: 'Not authorised'
-      }
-    }
+    throw error(401, 'Not authorised');
   }
-
 
   try {
     const query = {
@@ -28,68 +19,40 @@ export const GET: RequestHandler = async ({ locals }) => {
 
     const res = await listItems(query);
 
-    if (!res?.length) {
-      return {
-        body,
-        status: 204
-      }
+    let unsortedList: S3Object[] = [];
+
+    if (res.length) {
+      unsortedList = res.filter(el => {
+        if (el && el.Key && el.Key.substring(0, 11) !== 'magiclinks/') {
+          return true;
+        }
+        return false;
+      });
     }
-
-
-    const unsortedList = res.filter(el => {
-      if (el && el.Key && el.Key.substring(0, 11) !== 'magiclinks/') {
-        return true;
-      }
-      return false;
-    });
 
     if (!unsortedList?.length) {
       return {
-        body,
-        status: 204
+        list: []
       }
     }
+    list = unsortedList.sort((a, b) => a.Key?.localeCompare(b.Key || '') || 0);
 
-    const list = unsortedList.sort((a, b) => a.Key?.localeCompare(b.Key || '') || 0) as JSONValue
-
-    body = {
-      ...body,
-      list: list
-    }
-    return {
-      status: 200,
-      body
-    }
+    // TODO: Work this out, types are not right
+    const ListString = JSON.stringify(list);
+    const ListJson = JSON.parse(ListString);
+    return { list: ListJson };
   } catch (e) {
     console.error(e);
-    return {
-      body,
-      status: 500,
-      error: {
-        name: 'Server Error',
-        message: 'Something went wrong'
-      },
-      list: []
-    }
+    throw error(500, 'Something went wrong');
   }
 }
-
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: Action = async ({ request, locals }) => {
   const auth = locals.auth;
   if (!auth) {
-    return {
-      status: 401,
-      error: {
-        message: 'Not Logged In'
-      }
-    }
+    throw error(401, 'Not Logged In')
+
   } else if (auth !== 'admin') {
-    return {
-      status: 403,
-      error: {
-        message: 'Upload Not Authorised'
-      }
-    }
+    throw error(403, 'Upload Not Authorised')
   }
 
   try {
@@ -99,17 +62,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       const file = files[i];
       const arrayBuffer = await file.arrayBuffer();
       const fileBuffer = Buffer.from(arrayBuffer);
-      const type = file.type;
       let fileName
       try {
-        const data = exif.fromBuffer(fileBuffer);
-        const exifDTO = data.SubExif.DateTimeOriginal
+        const parser = ExifParserFactory.create(fileBuffer);
+        const parsed = parser.parse();
+        if (!parsed?.tags?.DateTimeOriginal) {
+          throw new Error('No DateTimeOriginal');
+        }
+        const exifDTO = parsed.tags.DateTimeOriginal
         const [date, time] = exifDTO.split(' ');
         const [year, month, day] = date.split(':');
         const [hour, minute, second] = time.split(':');
         fileName = `${year}-${month}/${day}-${hour}-${minute}-${second}-${file.name}`;
       } catch (e) {
-        console.log('failed to read EXIF data', e)
+        console.log('failed to read EXIF data - using Last Modified Date', e)
         const { lastModified } = file;
         const LMD = new Date(lastModified);
         const month = (LMD.getMonth() + 1).toString().padStart(2, '0');
@@ -120,18 +86,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         const second = LMD.getSeconds();
         fileName = `${year}-${month}/${day}-${hour}-${minute}-${second}-${file.name}`;
       }
-      uploadFile(fileBuffer, fileName, type)
+      console.log(fileName)
+      // uploadFile(fileBuffer, fileName, type)
     }
-    return {
-      status: 202
-    }
+    return;
   } catch (e) {
     console.log(e)
-    return {
-      status: 500,
-      error: {
-        message: 'Could not upload files.'
-      }
-    }
+    throw error(500, 'Could not upload files.')
   }
 }

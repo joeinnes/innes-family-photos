@@ -1,42 +1,23 @@
-import type { RequestHandler } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+import { error } from '@sveltejs/kit';
 
 import { doesFileExist } from "$lib/s3";
-import { getAuthStatus } from "$lib//auth_middleware";
+import { getAuthStatus } from "$lib/auth_middleware";
 
-export const GET: RequestHandler = async ({ request, params }) => {
-  let body = {}
+export const load: PageServerLoad = async ({ request, params }) => {
   const auth = getAuthStatus(request);
 
   if (!auth) {
-    return {
-      status: 401
-    }
-  }
-
-  if (auth === "admin") {
-    body = {
-      ...body,
-      admin: true
-    }
+    throw error(401, 'Not authorised');
   }
 
   const fileExists = await doesFileExist(params.id);
 
   if (!fileExists) {
-    return {
-      status: 404,
-      body: {
-        id: null
-      }
-    }
-  }
-  body = {
-    ...body,
-    id: params.id
+    throw error(404, 'No such photo. Maybe it was deleted?');
   }
 
   return {
-    status: 200,
-    body
+    id: params.id || ''
   }
 }

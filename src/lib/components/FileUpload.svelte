@@ -3,15 +3,22 @@
 	import { Camera, CheckCircle } from 'svelte-heros';
 	import Button from '$lib/components/Button.svelte';
 	import { invalidate } from '$app/navigation';
+	import { ExifParserFactory } from 'ts-exif-parser';
+	import { fly } from 'svelte/transition';
 
 	export let open = false;
 	let dialog: HTMLDialogElement;
 	let form: HTMLFormElement;
-	let dataUrls: string[] = [];
+	type ReadFile = {
+		src: string;
+		meta: boolean;
+	};
+	let warniOS = false;
+	let filesData: ReadFile[] = [];
 	let submitting = false;
 	const reset = () => {
 		form.reset();
-		dataUrls = [];
+		filesData = [];
 		dialog.close();
 	};
 	const uploadFile = async (
@@ -76,15 +83,31 @@
 		const files = e.currentTarget.files;
 		if (!files || !files.length) return;
 		for (let i = 0; i < files.length; i++) {
+			let meta = true;
 			const reader = new FileReader();
+
 			reader.addEventListener('load', function () {
-				let res = '';
+				let res = {
+					src: '',
+					meta
+				};
 				if (typeof reader.result !== 'string') {
-					res = reader.result?.toString() || '';
+					res.src = reader.result?.toString() || '';
 				} else {
-					res = reader.result;
+					res.src = reader.result;
 				}
-				dataUrls = [...dataUrls, res];
+				let reader2 = new FileReader();
+				reader2.addEventListener('loadend', () => {
+					if (!(reader2.result instanceof ArrayBuffer)) throw new Error('Expected ArrayBuffer');
+					const parser = ExifParserFactory.create(reader2.result);
+					const parsed = parser.parse();
+					if (!parsed?.tags?.DateTimeOriginal) {
+						res.meta = false;
+						warniOS = true;
+					}
+					filesData = [...filesData, res];
+				});
+				reader2.readAsArrayBuffer(files[i]);
 			});
 			reader.readAsDataURL(files[i]);
 		}
@@ -122,8 +145,14 @@
 				required
 			/>
 			<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 rounded-lg not-prose mt-4">
-				{#each dataUrls as src, i}
-					<img {src} alt="Preview {i}" class="w-full h-auto aspect-square object-cover rounded" />
+				{#each filesData as fileData, i}
+					<div class="relative">
+						<img
+							src={fileData.src}
+							alt="Preview {i}"
+							class="w-full h-auto aspect-square object-cover rounded"
+						/>
+					</div>
 				{/each}
 				<div
 					class="bg-primary-100 text-primary-300 aspect-square w-full text-bold flex flex-col justify-center items-center text-6xl h-auto rounded"
@@ -132,6 +161,17 @@
 				</div>
 			</div>
 		</label>
+		{#if warniOS}
+			<div transition:fly>
+				<small>
+					Your device is hiding metadata. This is a good thing for your privacy, but means we'll be
+					guessing at the date one or more of the photos above was taken.<a
+						href="/metadata-stripping"
+						target="_blank">More here</a
+					>.
+				</small>
+			</div>
+		{/if}
 		<div class="flex gap-2 w-full justify-end">
 			<Button type="reset" bind:disabled={submitting} colour="neutral" clickHandler={reset}
 				>Cancel</Button

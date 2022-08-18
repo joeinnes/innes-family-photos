@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import type { GetObjectRequest, ListObjectsV2Request, PutObjectRequest } from 'aws-sdk/clients/s3';
+import type { DeleteObjectRequest, GetObjectRequest, HeadObjectRequest, ListObjectsV2Request, PutObjectRequest } from 'aws-sdk/clients/s3';
 
 AWS.config.update({
   accessKeyId: process.env.S3_ACCESS_KEY,
@@ -93,7 +93,7 @@ export const deleteFile = async (key: string) => {
     if (!key) {
       throw new Error('No key provided');
     }
-    const params = {
+    const params: DeleteObjectRequest = {
       Bucket: process.env.S3_BUCKET || '',
       Key: key
     }
@@ -111,7 +111,7 @@ export const doesFileExist = async (key: string) => {
     if (!key) {
       throw new Error('No key provided');
     }
-    let params = {
+    let params: HeadObjectRequest = {
       Bucket: process.env.S3_BUCKET || '',
       Key: key
     }

@@ -1,14 +1,14 @@
 <script lang="ts">
+	import type { PageData } from './$types';
+
 	import Lightbox from '$lib/components/Lightbox.svelte';
 	import Gallery from '$lib/components/Gallery.svelte';
-
 	import { session } from '$app/stores';
+	import type { Object as S3Object } from 'aws-sdk/clients/s3';
+	export let data: PageData;
 	const { auth } = $session;
-	export let list = [
-		{
-			Key: ''
-		}
-	];
+
+	$: ({ list } = data);
 
 	const getMonthTitle = (month: string) => {
 		try {
@@ -28,7 +28,8 @@
 	}
 	let images: ImagesMap = {};
 	$: {
-		list.forEach((el) => {
+		list.forEach((el: S3Object) => {
+			if (!el || !el.Key) return;
 			let month = el.Key.substring(0, 7);
 			let fileName = el.Key.substring(8);
 			if (images[month]) {
@@ -38,7 +39,7 @@
 						{
 							key: fileName,
 							prefix: month,
-							fullKey: el.Key
+							fullKey: el.Key || ''
 						}
 					];
 				}
