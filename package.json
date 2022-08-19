@@ -22,11 +22,11 @@
 		"@typescript-eslint/parser": "^5.33.1",
 		"autoprefixer": "^10.4.8",
 		"aws-sdk": "^2.1195.0",
+		"date-fns": "^2.29.2",
 		"dotenv": "^16.0.1",
 		"eslint": "^8.22.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte3": "^4.0.0",
-		"jpeg-exif": "^1.1.4",
 		"jsonwebtoken": "^8.5.1",
 		"postcss": "^8.4.16",
 		"prettier": "^2.7.1",
@@ -44,9 +44,5 @@
 		"values.js": "^2.1.1",
 		"vite": "^3.0.8"
 	},
-	"type": "module",
-	"dependencies": {
-		"date-fns": "^2.29.2",
-		"svelte-tiny-linked-charts": "github:joeinnes/svelte-tiny-linked-charts"
-	}
+	"type": "module"
 }
