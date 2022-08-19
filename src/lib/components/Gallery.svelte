@@ -4,6 +4,7 @@
 
   import { selected } from '$lib/stores/selected';
   import { MenuAlt2, ViewGrid } from 'svelte-heros';
+  import { parse, format } from 'date-fns';
 
   type Image = {
     key: string;
@@ -28,25 +29,6 @@
   };
   let observer: IntersectionObserver;
 
-  const readDateFromKey = (key: string) => {
-    try {
-      const keyArr = key.split('/');
-      const yearMonth = keyArr[2];
-      const [year, month] = yearMonth.split('-');
-      const datetime = keyArr[3];
-      const [day, hour, minute, second] = datetime.split('-');
-      const date = new Date(year, parseInt(month, 10) - 1, day, hour, minute, second);
-      return date.toLocaleString('en-GB', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric'
-      });
-    } catch (e) {
-      return '';
-    }
-  };
   onMount(() => {
     if (!root) {
       return;
@@ -117,7 +99,10 @@
                 <div
                   class="date-overlay transform translate-y-full group-hover:translate-y-0 transition-transform duration-200"
                 >
-                  {readDateFromKey(imgUrl)}
+                  {format(
+                    parse(image.fullKey.split('Z')[0], 'yyyy/MM/dd/hh:mm:ss', new Date()),
+                    'dd MMM yyyy, hh:mm'
+                  )}
                 </div>
               </div>
             {:catch}

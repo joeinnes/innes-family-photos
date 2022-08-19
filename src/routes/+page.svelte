@@ -10,8 +10,6 @@
   export let data: PageData;
   const { auth } = $page.data;
 
-  $: ({ list } = data);
-
   const getMonthTitle = (month: string) => {
     try {
       return new Date(month).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
@@ -31,6 +29,7 @@
   let images: ImagesMap = {};
 
   $: {
+    const { list } = data;
     list
       .sort((a: S3Object, b: S3Object) => {
         if (!a.Key || !b.Key) return;

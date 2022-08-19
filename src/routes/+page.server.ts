@@ -4,7 +4,7 @@ import { error } from '@sveltejs/kit';
 import { listItems, uploadFile } from '$lib/s3';
 import { ExifParserFactory } from 'ts-exif-parser';
 import { getAuthStatus } from '$lib/auth_middleware';
-import { parse } from 'date-fns';
+import { sub, add } from 'date-fns';
 
 export const load: PageServerLoad = async ({ request }) => {
   const auth = getAuthStatus(request);
@@ -66,7 +66,8 @@ export const POST: Action = async ({ request }) => {
       const type = file.type;
       // TODO: Until #11 is implemented, hardcode the UTC offset. 
       const utcOffset = '+0200';
-      let fileName
+      let DateTime;
+
       try {
         const parser = ExifParserFactory.create(fileBuffer);
         const parsed = parser.parse();
@@ -74,29 +75,33 @@ export const POST: Action = async ({ request }) => {
           throw new Error('No DateTimeOriginal');
         }
         const exifDTO = parsed.tags.DateTimeOriginal;
-
-        const DateTime = parse(exifDTO, 'yyyy:MM:dd HH:mm:ss', new Date() * 1000);
-
-        const month = (DateTime.getMonth() + 1).toString().padStart(2, '0');
-        const year = DateTime.getFullYear();
-        const day = DateTime.getDate();
-        const hour = DateTime.getHours();
-        const minute = DateTime.getMinutes();
-        const second = DateTime.getSeconds();
-        fileName = `${year}/${month}/${day}/${hour}:${minute}:${second}${utcOffset}-${file.name}`;
+        // TODO: no accounting for UTC offset
+        const DTOasDate = new Date(exifDTO * 1000);
+        if (utcOffset[0] === '+') {
+          DateTime = sub(DTOasDate, {
+            hours: parseInt(utcOffset.substring(1, 3), 10),
+            minutes: parseInt(utcOffset.substring(3, 5), 10)
+          });
+        } else {
+          DateTime = add(DTOasDate, {
+            hours: parseInt(utcOffset.substring(1, 3), 10),
+            minutes: parseInt(utcOffset.substring(3, 5), 10)
+          });
+        }
       } catch (e) {
         console.error('failed to read EXIF data - using Last Modified Date', e)
         const { lastModified } = file;
-        const DateTime = new Date(lastModified);
-        const month = (DateTime.getMonth() + 1).toString().padStart(2, '0');
-        const year = DateTime.getFullYear();
-        const day = DateTime.getDate();
-        const hour = DateTime.getHours();
-        const minute = DateTime.getMinutes();
-        const second = DateTime.getSeconds();
-        fileName = `${year}/${month}/${day}/${hour}:${minute}:${second}${utcOffset}-${file.name}`;
+        // Seems that this is good enough to create a correct date :)
+        DateTime = new Date(lastModified);
       }
-      uploadFile(fileBuffer, fileName, type)
+      const month = (DateTime.getUTCMonth() + 1).toString().padStart(2, '0');
+      const year = DateTime.getUTCFullYear();
+      const day = DateTime.getUTCDate();
+      const hour = DateTime.getUTCHours();
+      const minute = DateTime.getUTCMinutes();
+      const second = DateTime.getUTCSeconds();
+      const fileName = `${year}/${month}/${day}/${hour}:${minute}:${second}Z${utcOffset}-${file.name}`;
+      uploadFile(fileBuffer, fileName, type);
     }
     return;
   } catch (e) {

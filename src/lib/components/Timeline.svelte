@@ -1,26 +1,25 @@
 <script lang="ts">
   import { parse, differenceInMonths, subMonths, format, addMonths } from 'date-fns';
 
-  export let images: { [month: string]: string[] };
-
+  export let images = {};
   let monthList = Object.keys(images).sort();
 
   export let start = monthList[0];
   export let end = monthList[monthList.length - 1];
-  let startDate = parse(start, 'yyyy-MM', new Date());
-  const endDate = parse(end, 'yyyy-MM', new Date());
+  let startDate = parse(start, 'yyyy/MM', new Date());
+  const endDate = parse(end, 'yyyy/MM', new Date());
 
   let months = differenceInMonths(endDate, startDate);
 
   if (months < 12) {
-    startDate = subMonths(startDate, 6);
+    startDate = subMonths(startDate, 12);
     months = 12;
   }
   let data: { [key: string]: number } = {};
   let i = 0;
   while (i < months + 1) {
     const date = subMonths(endDate, i);
-    const dateText = format(date, 'yyyy-MM');
+    const dateText = format(date, 'yyyy/MM');
     const countImages = images[dateText]?.length || 0;
     data[dateText] = countImages;
     i++;
@@ -70,7 +69,7 @@
             class="translate-y-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 overflow-visible whitespace-nowrap  w-0 -translate-x-full"
           >
             <span class="absolute left-0 transform -translate-x-1/2">
-              {format(parse(month, 'yyyy-MM', new Date()), 'MMM yyyy')}
+              {format(parse(month, 'yyyy/MM', new Date()), 'MMM yyyy')}
             </span>
           </div>
           <div
