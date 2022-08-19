@@ -29,28 +29,40 @@
     i++;
   }
   let width = 0;
+
+  // KNOWN ISSUE:
+  // If there width is less than minBarWidth + 2 * count of months, the chart will overflow the SVG viewbox. On most desktop resolutions, this should be between 10-15 years. I'm hoping that by the time the issue is actual, svg overflow should be working, although it's not currently implemented.
 </script>
 
 <div bind:clientWidth={width} />
+<h2>Photos from {format(endDate, 'MMM yyyy')} - {format(startDate, 'MMM yyyy')}</h2>
 {#key width}
-  <LinkedLabel linked="link" />
-
-  <LinkedChart
-    dispatchEvents={true}
-    {width}
-    height={width / 10}
-    {data}
-    grow={true}
-    fill="currentColor"
-    linked="link"
-    showValue={true}
-    valuePosition="floating"
-    clickHandler={(key, i) => console.log('handling', key, i)}
-  />
+  <span>
+    <LinkedLabel linked="link" />
+  </span>
+  <div class="chart-container">
+    <LinkedChart
+      dispatchEvents={true}
+      {width}
+      height={width / 10}
+      {data}
+      grow={true}
+      fill="currentColor"
+      linked="link"
+      showValue={true}
+      valuePosition="floating"
+      clickHandler={(key, i) => console.log('handling', key, i)}
+      align="left"
+    />
+  </div>
 {/key}
 
 <style lang="scss">
-  svg {
-    @apply h-32 text-neutral-300;
+  :global(.chart-container svg) {
+    @apply h-32 text-neutral-300 focus:outline-none;
+    overflow: auto;
+  }
+  :global(.chart-container svg rect) {
+    @apply hover:text-neutral-500;
   }
 </style>
