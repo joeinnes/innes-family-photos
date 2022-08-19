@@ -71,7 +71,8 @@ export const POST: Action = async ({ request }) => {
           throw new Error('No DateTimeOriginal');
         }
         const exifDTO = parsed.tags.DateTimeOriginal
-        const DateTime = new Date(exifDTO);
+        const DateTime = new Date(exifDTO * 1000);
+
         const month = (DateTime.getMonth() + 1).toString().padStart(2, '0');
         const year = DateTime.getFullYear();
         const day = DateTime.getDate();
