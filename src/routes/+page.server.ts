@@ -4,6 +4,7 @@ import { error } from '@sveltejs/kit';
 import { listItems, uploadFile } from '$lib/s3';
 import { ExifParserFactory } from 'ts-exif-parser';
 import { getAuthStatus } from '$lib/auth_middleware';
+import { parse } from 'date-fns';
 
 export const load: PageServerLoad = async ({ request }) => {
   const auth = getAuthStatus(request);
@@ -63,6 +64,8 @@ export const POST: Action = async ({ request }) => {
       const arrayBuffer = await file.arrayBuffer();
       const fileBuffer = Buffer.from(arrayBuffer);
       const type = file.type;
+      // TODO: Until #11 is implemented, hardcode the UTC offset. 
+      const utcOffset = '+0200';
       let fileName
       try {
         const parser = ExifParserFactory.create(fileBuffer);
@@ -70,8 +73,9 @@ export const POST: Action = async ({ request }) => {
         if (!parsed?.tags?.DateTimeOriginal) {
           throw new Error('No DateTimeOriginal');
         }
-        const exifDTO = parsed.tags.DateTimeOriginal
-        const DateTime = new Date(exifDTO * 1000);
+        const exifDTO = parsed.tags.DateTimeOriginal;
+
+        const DateTime = parse(exifDTO, 'yyyy:MM:dd HH:mm:ss', new Date() * 1000);
 
         const month = (DateTime.getMonth() + 1).toString().padStart(2, '0');
         const year = DateTime.getFullYear();
@@ -79,7 +83,7 @@ export const POST: Action = async ({ request }) => {
         const hour = DateTime.getHours();
         const minute = DateTime.getMinutes();
         const second = DateTime.getSeconds();
-        fileName = `${year}-${month}/${day}-${hour}-${minute}-${second}-${file.name}`;
+        fileName = `${year}/${month}/${day}/${hour}:${minute}:${second}${utcOffset}-${file.name}`;
       } catch (e) {
         console.error('failed to read EXIF data - using Last Modified Date', e)
         const { lastModified } = file;
@@ -90,7 +94,7 @@ export const POST: Action = async ({ request }) => {
         const hour = DateTime.getHours();
         const minute = DateTime.getMinutes();
         const second = DateTime.getSeconds();
-        fileName = `${year}-${month}/${day}-${hour}-${minute}-${second}-${file.name}`;
+        fileName = `${year}/${month}/${day}/${hour}:${minute}:${second}${utcOffset}-${file.name}`;
       }
       uploadFile(fileBuffer, fileName, type)
     }

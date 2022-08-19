@@ -71,7 +71,7 @@
 </script>
 
 {#if title !== 'Invalid Date'}
-  <section bind:this={root} class="month" transition:fade>
+  <section bind:this={root} class="month" transition:fade id={encodeURIComponent(title)}>
     <div class="month-header">
       <h3>{title}</h3>
       <div class="button" on:click={() => (grid = true)}>

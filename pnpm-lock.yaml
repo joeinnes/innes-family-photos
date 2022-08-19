@@ -15,7 +15,6 @@ specifiers:
   eslint: ^8.22.0
   eslint-config-prettier: ^8.5.0
   eslint-plugin-svelte3: ^4.0.0
-  jpeg-exif: ^1.1.4
   jsonwebtoken: ^8.5.1
   postcss: ^8.4.16
   prettier: ^2.7.1
@@ -25,7 +24,6 @@ specifiers:
   svelte-check: ^2.8.0
   svelte-heros: ^2.3.3
   svelte-preprocess: ^4.10.7
-  svelte-tiny-linked-charts: github:joeinnes/svelte-tiny-linked-charts
   tailwindcss: ^3.1.8
   ts-exif-parser: ^0.2.2
   tslib: ^2.4.0
@@ -33,10 +31,6 @@ specifiers:
   uuid: ^8.3.2
   values.js: ^2.1.1
   vite: ^3.0.8
-
-dependencies:
-  date-fns: 2.29.2
-  svelte-tiny-linked-charts: github.com/joeinnes/svelte-tiny-linked-charts/112e8132a16e9340112882e8030c40fc2b9b89f2
 
 devDependencies:
   '@sveltejs/adapter-auto': 1.0.0-next.64
@@ -48,11 +42,11 @@ devDependencies:
   '@typescript-eslint/parser': 5.33.1_4rv7y5c6xz3vfxwhbrcxxi73bq
   autoprefixer: 10.4.8_postcss@8.4.16
   aws-sdk: 2.1195.0
+  date-fns: 2.29.2
   dotenv: 16.0.1
   eslint: 8.22.0
   eslint-config-prettier: 8.5.0_eslint@8.22.0
   eslint-plugin-svelte3: 4.0.0_laaqauvsmoyypsiqkozwyi2fn4
-  jpeg-exif: 1.1.4
   jsonwebtoken: 8.5.1
   postcss: 8.4.16
   prettier: 2.7.1
@@ -766,7 +760,7 @@ packages:
   /date-fns/2.29.2:
     resolution: {integrity: sha512-0VNbwmWJDS/G3ySwFSJA3ayhbURMTJLtwM2DTxf9CWondCnh6DTNlO9JgRSq6ibf4eD0lfMJNBxUdEAHHix+bA==}
     engines: {node: '>=0.11'}
-    dev: false
+    dev: true
 
   /debug/4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
@@ -1752,10 +1746,6 @@ packages:
   /jmespath/0.16.0:
     resolution: {integrity: sha512-9FzQjJ7MATs1tSpnco1K6ayiYE3figslrXA72G2HQ/n76RzvYlofyi5QM+iX4YRs/pu3yzxlVQSST23+dMDknw==}
     engines: {node: '>= 0.6.0'}
-    dev: true
-
-  /jpeg-exif/1.1.4:
-    resolution: {integrity: sha512-a+bKEcCjtuW5WTdgeXFzswSrdqi0jk4XlEtZlx5A94wCoBpFjfFTbo/Tra5SpNCl/YFZPvcV1dJc+TAYeg6ROQ==}
     dev: true
 
   /js-yaml/4.1.0:
@@ -2985,9 +2975,3 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
-
-  github.com/joeinnes/svelte-tiny-linked-charts/112e8132a16e9340112882e8030c40fc2b9b89f2:
-    resolution: {tarball: https://codeload.github.com/joeinnes/svelte-tiny-linked-charts/tar.gz/112e8132a16e9340112882e8030c40fc2b9b89f2}
-    name: svelte-tiny-linked-charts
-    version: 1.1.3
-    dev: false
