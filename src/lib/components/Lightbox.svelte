@@ -121,7 +121,7 @@
         class="absolute top-1/2 right-2 text-6xl z-30 border-4 rounded-full text-white cursor-pointer hover:bg-white hover:border-neutral-500 hover:text-neutral-500 border-white transition-colors"
         on:click={() => ($selected = $gallery[next].fullKey)}
       >
-        <ChevronRight size="6" />
+        <ChevronRight size="64" />
       </div>{/if}
     <div
       class="lightbox-container"
