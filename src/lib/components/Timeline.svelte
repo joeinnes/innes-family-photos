@@ -58,7 +58,7 @@
       {#each Object.keys(data) as month}
         {@const monthAsDate = parse(month, 'yyyy/MM', new Date())}
         <div
-          class="h-full w-full relative flex flex-col items-center justify-end group border-b border-neutral-300 hover:border-neutral-400"
+          class="h-full w-full relative flex flex-col items-center justify-end group border-b border-neutral-300 hover:border-neutral-400 cursor-pointer"
           on:click={() => scrollTo(month)}
         >
           <div

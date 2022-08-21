@@ -1,11 +1,11 @@
 <script lang="ts">
   import { browser } from '$app/env';
   import { page } from '$app/stores';
-  import { invalidate, goto } from '$app/navigation';
+  import { goto } from '$app/navigation';
   import Button from '$lib/components/Button.svelte';
   import { fade } from 'svelte/transition';
-  import { selected } from '$lib/stores/selected';
-  import { Trash, Link, CloudDownload, CheckCircle } from 'svelte-heros';
+  import { selected, gallery } from '$lib/stores/selected';
+  import { Trash, Link, CloudDownload, CheckCircle, ChevronLeft, ChevronRight } from 'svelte-heros';
   import Messenger from './icons/Messenger.svelte';
   import WhatsApp from './icons/WhatsApp.svelte';
   import { notify } from '$lib/stores/notify';
@@ -94,10 +94,35 @@
       get_average_rgb(el);
     }
   }
+  let next;
+  let last;
+  $: {
+    console.log({ $gallery, $selected });
+    next = $gallery.findIndex((g) => g.fullKey === $selected) + 1;
+    last = $gallery.findIndex((g) => g.fullKey === $selected) - 1;
+    if (next === $gallery.length) {
+      next = -1;
+    }
+    if (last < 0) {
+      last = -1;
+    }
+  }
 </script>
 
 {#if $selected}
-  <div class="z-20">
+  <div class="z-20 select-none">
+    {#if last !== -1}<div
+        class="absolute top-1/2 left-2 text-6xl z-30 border-4 rounded-full text-white cursor-pointer hover:bg-white hover:border-neutral-500 hover:text-neutral-500 border-white transition-colors"
+        on:click={() => ($selected = $gallery[last].fullKey)}
+      >
+        <ChevronLeft size={64} />
+      </div>{/if}
+    {#if next !== -1}<div
+        class="absolute top-1/2 right-2 text-6xl z-30 border-4 rounded-full text-white cursor-pointer hover:bg-white hover:border-neutral-500 hover:text-neutral-500 border-white transition-colors"
+        on:click={() => ($selected = $gallery[next].fullKey)}
+      >
+        <ChevronRight size={64} />
+      </div>{/if}
     <div
       class="lightbox-container"
       transition:fade={{ duration: 200 }}

@@ -2,7 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { fly, fade } from 'svelte/transition';
 
-  import { selected } from '$lib/stores/selected';
+  import { selected, gallery } from '$lib/stores/selected';
   import { MenuAlt2, ViewGrid } from 'svelte-heros';
   import { parse, format } from 'date-fns';
 
@@ -50,6 +50,18 @@
   onDestroy(() => {
     observer?.disconnect();
   });
+
+  const handleClick = (fk: string) => {
+    $selected = fk;
+    $gallery = images;
+  };
+
+  let theseImages;
+  $: {
+    theseImages = images.sort((a, b) => {
+      return b.key.localeCompare(a.key);
+    });
+  }
 </script>
 
 {#if title !== 'Invalid Date'}
@@ -66,7 +78,7 @@
     {#key grid}
       <div class="gallery not-prose" class:gallery-grid={grid}>
         {#if loaded}
-          {#each images.sort().reverse() as image}
+          {#each images as image}
             {@const imgUrl = `/file/${image.fullKey}`}
             {#await preload(imgUrl)}
               <div
@@ -87,7 +99,7 @@
             {:then _}
               <div
                 class="relative overflow-hidden group"
-                on:click={() => ($selected = `${image.fullKey}`)}
+                on:click={() => handleClick(image.fullKey)}
               >
                 <img
                   src={imgUrl}
