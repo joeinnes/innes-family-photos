@@ -94,8 +94,8 @@
       get_average_rgb(el);
     }
   }
-  let next;
-  let last;
+  let next: number;
+  let last: number;
   $: {
     console.log({ $gallery, $selected });
     next = $gallery.findIndex((g) => g.fullKey === $selected) + 1;
@@ -115,13 +115,13 @@
         class="absolute top-1/2 left-2 text-6xl z-30 border-4 rounded-full text-white cursor-pointer hover:bg-white hover:border-neutral-500 hover:text-neutral-500 border-white transition-colors"
         on:click={() => ($selected = $gallery[last].fullKey)}
       >
-        <ChevronLeft size={64} />
+        <ChevronLeft size="64" />
       </div>{/if}
     {#if next !== -1}<div
         class="absolute top-1/2 right-2 text-6xl z-30 border-4 rounded-full text-white cursor-pointer hover:bg-white hover:border-neutral-500 hover:text-neutral-500 border-white transition-colors"
         on:click={() => ($selected = $gallery[next].fullKey)}
       >
-        <ChevronRight size={64} />
+        <ChevronRight size="6" />
       </div>{/if}
     <div
       class="lightbox-container"
