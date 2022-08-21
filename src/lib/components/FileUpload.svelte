@@ -166,9 +166,10 @@
       <div transition:fly>
         <small>
           Your device is hiding metadata. This is a good thing for your privacy, but means we'll be
-          guessing at the date one or more of the photos above was taken.<a
+          guessing at the date one or more of the photos above was taken. <a
             href="/metadata-stripping"
-            target="_blank">More here</a
+            target="_blank"
+            class="underline">More here</a
           >.
         </small>
       </div>
