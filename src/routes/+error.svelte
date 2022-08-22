@@ -3,6 +3,9 @@
   import LogIn from '$lib/components/LogIn.svelte';
   const { auth } = $page.data;
   let shouldLogIn = !auth;
+  export let data;
+  export let errors;
+  console.log({ data, errors, $page });
 
   $: {
     if ($page.status === 401 || !auth) {

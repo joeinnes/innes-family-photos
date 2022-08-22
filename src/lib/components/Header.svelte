@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto, invalidate } from '$app/navigation';
-  import { Logout } from 'svelte-heros';
+  import { Logout, Heart } from 'svelte-heros';
   import FileUpload from '$lib/components/FileUpload.svelte';
   import Button from '$lib/components/Button.svelte';
   import { page } from '$app/stores';
@@ -26,6 +26,7 @@
     {#if auth === 'admin'}
       <a href="/magic-link">Magic Links</a>
     {/if}
+    <a href="/loved">Loved</a>
     <a href="/about">About</a>
   </div>
   <div class="action-buttons">

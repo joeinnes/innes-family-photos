@@ -19,8 +19,6 @@
   };
 
   interface Image {
-    key: string;
-    prefix: string;
     fullKey: string;
   }
   interface ImagesMap {
@@ -38,14 +36,11 @@
       .forEach((el: S3Object) => {
         if (!el || !el.Key) return;
         let month = el.Key.substring(0, 7);
-        let fileName = el.Key.substring(8);
         if (images[month]) {
-          if (!images[month].find((el) => el.key === fileName)) {
+          if (!images[month].find((img) => img.fullKey === el.Key)) {
             images[month] = [
               ...images[month],
               {
-                key: fileName,
-                prefix: month,
                 fullKey: el.Key || ''
               }
             ];
@@ -53,8 +48,6 @@
         } else {
           images[month] = [
             {
-              key: fileName,
-              prefix: month,
               fullKey: el.Key
             }
           ];

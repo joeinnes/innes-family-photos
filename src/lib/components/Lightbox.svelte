@@ -97,7 +97,6 @@
   let next: number;
   let last: number;
   $: {
-    console.log({ $gallery, $selected });
     next = $gallery.findIndex((g) => g.fullKey === $selected) + 1;
     last = $gallery.findIndex((g) => g.fullKey === $selected) - 1;
     if (next === $gallery.length) {

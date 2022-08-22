@@ -3,13 +3,12 @@
   import { fly, fade } from 'svelte/transition';
 
   import { selected, gallery } from '$lib/stores/selected';
-  import { MenuAlt2, ViewGrid } from 'svelte-heros';
+  import { loved } from '$lib/stores/loved';
+  import { MenuAlt2, ViewGrid, Heart } from 'svelte-heros';
   import { parse, format } from 'date-fns';
 
   type Image = {
-    key: string;
     fullKey: string;
-    prefix: string;
   };
   export let images: Image[];
 
@@ -19,6 +18,18 @@
   let root: HTMLElement;
   let loaded = false;
 
+  const clickHandler = (image: Image) => {
+    const index = $loved.findIndex((el: Image) => {
+      return el.fullKey === image.fullKey;
+    });
+    let newLoved = [...$loved];
+    if (index > -1) {
+      newLoved.splice(index, 1);
+    } else {
+      newLoved.push(image);
+    }
+    $loved = newLoved;
+  };
   const preload = (src: string) => {
     return new Promise(function (resolve, reject) {
       let img = new Image();
@@ -56,11 +67,15 @@
     $gallery = images;
   };
 
+  let isLoved = (img: Image) => false;
   let theseImages;
   $: {
     theseImages = images.sort((a, b) => {
-      return b.key.localeCompare(a.key);
+      return b.fullKey.localeCompare(a.fullKey);
     });
+    isLoved = (img: Image) => {
+      return $loved.find((el) => el.fullKey === img.fullKey) ? true : false;
+    };
   }
 </script>
 
@@ -97,10 +112,7 @@
                 >
               </div>
             {:then _}
-              <div
-                class="relative overflow-hidden group"
-                on:click={() => handleClick(image.fullKey)}
-              >
+              <div class="overflow-hidden group" on:click={() => handleClick(image.fullKey)}>
                 <img
                   src={imgUrl}
                   class="cursor-pointer"
@@ -116,10 +128,23 @@
                     'dd MMM yyyy, hh:mm'
                   )}
                 </div>
+                {#key isLoved(image)}
+                  <div
+                    class="love-overlay bg-white translate-x-full group-hover:translate-x-0 border-2 border-red-500 "
+                    on:click|stopPropagation={() => clickHandler(image)}
+                  >
+                    <span transition:fade>
+                      <Heart
+                        class="text-red-500"
+                        variation={isLoved(image) ? 'solid' : 'outline'}
+                      />
+                    </span>
+                  </div>
+                {/key}
               </div>
             {:catch}
               <div
-                class="flex justify-center items-center w-full h-64 aspect-video  bg-red-300 rounded"
+                class="flex justify-center items-center w-full h-64 aspect-video bg-red-300 rounded"
                 class:aspect-square={grid}
               >
                 <svg
@@ -170,6 +195,9 @@
       }
       .date-overlay {
         @apply absolute bottom-0 left-0 right-0 text-neutral-50 text-sm  font-thin bg-gradient-to-t from-neutral-900 to-transparent pl-2 pt-4 pb-1 select-none cursor-pointer;
+      }
+      .love-overlay {
+        @apply absolute top-1 -right-1 p-2 pr-4 transform transition-transform  text-neutral-50 text-sm font-thin bg-gradient-to-t select-none cursor-pointer rounded-r;
       }
     }
 
