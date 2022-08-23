@@ -50,7 +50,6 @@
   const updateCollection = async (name: string) => {
     working = true;
     const collectionToUpdate = collections.find((el) => el.name === name);
-    console.log(name, collectionToUpdate, collections);
     const uriSafeName = encodeURIComponent(name);
     const newImages = collectionToUpdate.images.filter((el) => !$collection.includes(el));
     const content = newImages.map((el) => el.fullKey);

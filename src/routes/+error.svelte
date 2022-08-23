@@ -5,7 +5,7 @@
   let shouldLogIn = !auth;
   export let data;
   export let errors;
-  console.log({ data, errors, $page });
+  console.error({ data, errors, $page });
 
   $: {
     if ($page.status === 401 || !auth) {

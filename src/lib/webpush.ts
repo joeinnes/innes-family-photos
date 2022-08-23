@@ -22,7 +22,6 @@ export const notifyAll = async (message: string) => {
       if (e.statusCode === 401) {
         deleteFile(file.Key);
       }
-      // console.log(e)
     }
   })
 
