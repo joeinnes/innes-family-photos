@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({ request }) => {
 
     if (res.length) {
       unsortedList = res.filter(el => {
-        if (el && el.Key && el.Key.substring(0, 11) !== 'magiclinks/') {
+        if (el && el.Key && el.Key.substring(0, 11) !== 'magiclinks/' && el.Key.substring(0, 12) !== 'collections/') {
           return true;
         }
         return false;

@@ -64,6 +64,30 @@ export const uploadFile = async (file: Buffer, key: string, type: string) => {
   }
 }
 
+export const createCollection = async (file: string, key: string) => {
+  try {
+    let params: PutObjectRequest = {
+      Bucket: process.env.S3_BUCKET || '',
+      Body: file,
+      Key: key,
+      ContentType: 'text/plain'
+    }
+    if (process.env.S3_ENCRYPTION_KEY) {
+      const ssecKey = Buffer.alloc(32, process.env.S3_ENCRYPTION_KEY);
+      params = {
+        ...params,
+        SSECustomerAlgorithm: 'AES256',
+        SSECustomerKey: ssecKey
+      }
+    }
+    const res = await s3.putObject(params).promise();
+    return res;
+  } catch (e) {
+    console.error(e);
+    return e;
+  }
+}
+
 export const getFile = async (key: string) => {
   try {
     if (!key) {

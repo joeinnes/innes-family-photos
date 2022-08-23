@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto, invalidate } from '$app/navigation';
-  import { Logout, Heart } from 'svelte-heros';
+  import { Logout } from 'svelte-heros';
+  import Heading from '$lib/components/Heading.svelte';
   import FileUpload from '$lib/components/FileUpload.svelte';
   import Button from '$lib/components/Button.svelte';
   import { page } from '$app/stores';
@@ -18,14 +19,17 @@
 
 <header class="header">
   <div class="title">
-    <h1><a href="/">{import.meta.env.VITE_SITE_NAME}</a></h1>
-    <h2>{import.meta.env.VITE_SITE_TAGLINE}</h2>
+    <Heading level={1}
+      ><a href="/">{import.meta.env.VITE_SITE_NAME}</a>
+      <p slot="subheading">{import.meta.env.VITE_SITE_TAGLINE}</p></Heading
+    >
   </div>
 
   <div class="links">
     {#if auth === 'admin'}
       <a href="/magic-link">Magic Links</a>
     {/if}
+    <a href="/collection">Collections</a>
     <a href="/loved">Loved</a>
     <a href="/about">About</a>
   </div>
@@ -45,12 +49,6 @@
     @apply flex flex-col md:flex-row justify-between items-center gap-2 w-full p-2 lg:py-4 container mx-auto;
     .title {
       @apply flex-1 w-full;
-      h1 {
-        @apply text-4xl font-black tracking-wide text-neutral-900 border-b-4 hover:border-primary-400 inline-block box-border border-transparent transition-colors mb-0;
-      }
-      h2 {
-        @apply text-sm uppercase text-neutral-400 font-bold tracking-wide;
-      }
     }
     .action-buttons {
       @apply flex md:w-auto gap-2 text-sm md:text-base items-center;

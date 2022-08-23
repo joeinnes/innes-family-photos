@@ -178,20 +178,9 @@
       <Button type="reset" bind:disabled={submitting} colour="neutral" clickHandler={reset}
         >Cancel</Button
       >
-      <Button type="submit" colour="primary" bind:disabled={submitting}
-        ><div class="flex gap-2">
-          {#if submitting}<div class="spinner w-6 h-6" />{/if}Upload
-        </div></Button
+      <Button type="submit" colour="primary" bind:disabled={submitting} working={submitting}
+        ><div class="flex gap-2">Upload</div></Button
       >
     </div>
   </form>
 </dialog>
-
-<style lang="scss">
-  .spinner {
-    border: 5px solid rgba(255, 255, 255, 0.5);
-    border-bottom-color: #fff;
-    border-radius: 100%;
-    @apply animate-spin;
-  }
-</style>
