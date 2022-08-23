@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import type { DeleteObjectRequest, GetObjectRequest, HeadObjectRequest, ListObjectsV2Request, PutObjectRequest } from 'aws-sdk/clients/s3';
+import type { DeleteObjectRequest, GetObjectRequest, HeadObjectRequest, CopyObjectRequest, ListObjectsV2Request, PutObjectRequest } from 'aws-sdk/clients/s3';
 
 AWS.config.update({
   accessKeyId: process.env.S3_ACCESS_KEY,
@@ -107,6 +107,32 @@ export const getFile = async (key: string) => {
     }
     const res = await s3.getObject(params).promise();
     return res;
+  } catch (e) {
+    return e;
+  }
+}
+
+export const renameFile = async (oldKey: string, newKey: string) => {
+  try {
+    if (!oldKey && !newKey) {
+      throw new Error('One or more keys were not provided');
+    }
+    let params: CopyObjectRequest = {
+      Bucket: process.env.S3_BUCKET || '',
+      CopySource: process.env.S3_BUCKET + oldKey,
+      Key: newKey
+    };
+    if (process.env.S3_ENCRYPTION_KEY) {
+      const ssecKey = Buffer.alloc(32, process.env.S3_ENCRYPTION_KEY);
+      params = {
+        ...params,
+        SSECustomerAlgorithm: 'AES256',
+        SSECustomerKey: ssecKey
+      }
+    }
+    await s3.copyObject(params).promise();
+    await deleteFile(oldKey);
+    return;
   } catch (e) {
     return e;
   }
