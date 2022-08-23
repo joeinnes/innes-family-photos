@@ -81,7 +81,7 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification("Update", {
       body: event.data.text(),
-      img: '/favicon.png'
+      icon: '/favicon.png'
     })
   );
 });
