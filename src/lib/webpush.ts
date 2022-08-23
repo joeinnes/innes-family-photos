@@ -17,7 +17,7 @@ export const notifyAll = async (message: string) => {
     try {
       const subDetails = await getFile(file.Key);
       const sub = JSON.parse(subDetails.Body.toString());
-      await webpush.sendNotification(sub, 'Test payload');
+      await webpush.sendNotification(sub, message);
     } catch (e) {
       if (e.statusCode === 401) {
         deleteFile(file.Key);
