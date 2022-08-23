@@ -40,7 +40,7 @@ export const listItems = async (bucketParams: ListObjectsV2Request) => {
   return items;
 }
 
-export const uploadFile = async (file: Buffer, key: string, type: string) => {
+export const uploadFile = async (file: Buffer | string, key: string, type: string) => {
   try {
     let params: PutObjectRequest = {
       Bucket: process.env.S3_BUCKET || '',
@@ -182,3 +182,26 @@ export const doesFileExist = async (key: string) => {
   }
 }
 
+export const createFile = async (key: string) => {
+  try {
+    let params: PutObjectRequest = {
+      Bucket: process.env.S3_BUCKET || '',
+      Body: '',
+      Key: key,
+      ContentType: 'text/plain'
+    }
+    if (process.env.S3_ENCRYPTION_KEY) {
+      const ssecKey = Buffer.alloc(32, process.env.S3_ENCRYPTION_KEY);
+      params = {
+        ...params,
+        SSECustomerAlgorithm: 'AES256',
+        SSECustomerKey: ssecKey
+      }
+    }
+    const res = await s3.putObject(params).promise();
+    return res;
+  } catch (e) {
+    console.error(e);
+    return e;
+  }
+}

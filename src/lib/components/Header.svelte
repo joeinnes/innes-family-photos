@@ -12,7 +12,7 @@
     await fetch('/api/auth', {
       method: 'POST'
     });
-    await invalidate('/');
+    await invalidate();
     goto('/');
   };
 </script>

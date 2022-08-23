@@ -5,6 +5,25 @@
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
   import SideButton from '$lib/components/SideButton.svelte';
+  import { onMount } from 'svelte';
+
+  onMount(async () => {
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY
+      });
+    }
+    fetch('/api/subscribe', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(sub)
+    });
+  });
 </script>
 
 <svelte:head><title>{import.meta.env.VITE_SITE_NAME}</title></svelte:head>
