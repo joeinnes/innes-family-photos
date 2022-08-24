@@ -5,7 +5,6 @@ import { listItems, uploadFile } from '$lib/s3';
 import { ExifParserFactory } from 'ts-exif-parser';
 import { getAuthStatus } from '$lib/auth_middleware';
 import { sub, add } from 'date-fns';
-import { notifyAll } from '$lib/webpush';
 
 export const load: PageServerLoad = async ({ request }) => {
   const auth = getAuthStatus(request);
@@ -104,7 +103,6 @@ export const POST: Action = async ({ request }) => {
       const fileName = `${year}/${month}/${day}/${hour}:${minute}:${second}Z${utcOffset}-${file.name}`;
       uploadFile(fileBuffer, fileName, type);
     }
-    notifyAll(`${files.length} new photo${files.length > 1 ? 's' : ''} added!`)
     return;
   } catch (e) {
     console.error(e)

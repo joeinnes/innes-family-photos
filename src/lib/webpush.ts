@@ -13,16 +13,28 @@ export const notifyAll = async (message: string) => {
     Prefix: 'subscriptions/'
   })
 
+  console.log(`Notifying ${subscriptions.length} subscriber(s)`)
+  let stale = 0;
   subscriptions.forEach(async (file) => {
+
     try {
       const subDetails = await getFile(file.Key);
       const sub = JSON.parse(subDetails.Body.toString());
       await webpush.sendNotification(sub, message);
     } catch (e) {
-      if (e.statusCode === 401) {
-        deleteFile(file.Key);
+      // Clean up stale subscriptions
+      if (e.statusCode === 410 && file.Key) {
+        try {
+          stale++;
+          deleteFile(file.Key);
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        console.error(e);
       }
     }
   })
+  console.log(`${stale} stale subscription(s) removed.`)
 
 }
