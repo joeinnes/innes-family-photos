@@ -48,7 +48,10 @@
   // If there are so many bars that the browser window is not wide enough to show them all, there's no special handling. Hopefully this should not be a major issue for most users, so not fixing right now.
 </script>
 
-<div bind:clientWidth={width} class="hidden md:block py-1 px-4 border rounded-2xl bg-neutral-50">
+<div
+  bind:clientWidth={width}
+  class="hidden md:block py-1 px-4 border rounded-2xl bg-neutral-50 pb-2"
+>
   <div id="chart" />
   <h2 class="uppercase text-sm leading-loose text-neutral-300 font-semibold">
     Photos from {format(endDate, 'MMM yyyy')} - {format(startDate, 'MMM yyyy')}
