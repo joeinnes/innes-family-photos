@@ -5,6 +5,8 @@
   import { invalidate } from '$app/navigation';
   import { ExifParserFactory } from 'ts-exif-parser';
   import { fly } from 'svelte/transition';
+  import { onMount } from 'svelte';
+  import { getTimezoneOffset } from 'date-fns-tz';
 
   export let open = false;
   let dialog: HTMLDialogElement;
@@ -15,11 +17,47 @@
   };
   let warniOS = false;
   let filesData: ReadFile[] = [];
+  let timeZones = [];
+  let filteredTimezones = [];
+
   let submitting = false;
+  let tzFilter = '';
+  let currentTimezone = '';
+  let selectedTimezone = '';
+
+  const filterTimezones = (filter: string) => {
+    filteredTimezones = timeZones.filter((el) => {
+      return el.name.indexOf(filter) > -1;
+    });
+  };
   const reset = () => {
     form.reset();
     filesData = [];
     dialog.close();
+  };
+
+  onMount(() => {
+    timeZones = Intl.supportedValuesOf('timeZone').map((tz) => {
+      const tzOffset = getTimezoneOffset(tz);
+      const tzOffsetMins = tzOffset / (1000 * 60);
+      const offset = convertMinsToOffset(tzOffsetMins);
+      return {
+        name: tz,
+        offset
+      };
+    });
+    filteredTimezones = timeZones;
+    currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const offset = convertMinsToOffset(new Date().getTimezoneOffset());
+    selectedTimezone = currentTimezone;
+  });
+
+  const convertMinsToOffset = (offsetMins: number) => {
+    const hours = Math.abs(Math.trunc(offsetMins / 60)) + '';
+    const mins = Math.abs(offsetMins % 60) + '';
+    const sign = Math.sign(offsetMins);
+    const offset = `${sign > -1 ? '+' : '-'}${hours.padStart(2, '0')}${mins.padStart(2, '0')}`;
+    return offset;
   };
   const uploadFile = async (
     e: Event & {
@@ -37,7 +75,13 @@
         return;
       }
 
+      const tzOffset = getTimezoneOffset(selectedTimezone);
+      const tzOffsetMins = tzOffset / (1000 * 60);
+      const offset = convertMinsToOffset(tzOffsetMins);
+
       const formData = new FormData();
+      formData.append('timeZoneOffset', offset);
+
       for (let file of files) {
         formData.append('files', file);
       }
@@ -50,6 +94,8 @@
       if (!res.ok) {
         throw new Error('Files not uploaded.');
       }
+
+      target.reset();
       dialog.close();
 
       $notify = {
@@ -174,7 +220,28 @@
         </small>
       </div>
     {/if}
-    <div class="flex gap-2 w-full justify-end">
+    <details class="w-full">
+      <summary>Change timezone</summary>
+      <div class="flex flex-col md:flex-row w-full gap-2 items-center">
+        <label for="tz-filter" class="block no-wrap w-full">Search Timezones</label>
+        <input
+          type="text"
+          id="tz-filter"
+          class="border rounded px-4 py-2 block w-full outline-primary-500"
+          on:change={(e) => filterTimezones(e.target.value)}
+          placeholder="e.g. {currentTimezone}"
+        />
+        <select
+          class="border rounded px-3 py-2 outline-primary-500 w-full"
+          bind:value={selectedTimezone}
+        >
+          {#each filteredTimezones as timezone}
+            <option>{timezone.name}</option>
+          {/each}
+        </select>
+      </div>
+    </details>
+    <div class="flex flex-col md:flex-row gap-2 w-full justify-end">
       <Button type="reset" bind:disabled={submitting} colour="neutral" clickHandler={reset}
         >Cancel</Button
       >

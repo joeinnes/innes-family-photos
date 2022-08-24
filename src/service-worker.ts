@@ -81,7 +81,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification("Update", {
       body: event.data.text(),
-      icon: '/apple-touch-icon.png'
+      icon: '/android-chrome-512x512.png',
+      badge: '/android-chrome-512x512.png',
     })
   );
 });

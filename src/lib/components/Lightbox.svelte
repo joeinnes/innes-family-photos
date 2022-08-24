@@ -110,18 +110,6 @@
 
 {#if $selected}
   <div class="z-20 select-none">
-    {#if last !== -1}<div
-        class="absolute top-1/2 left-2 text-6xl z-30 border-4 rounded-full text-white cursor-pointer hover:bg-white hover:border-neutral-500 hover:text-neutral-500 border-white transition-colors"
-        on:click={() => ($selected = $gallery[last].fullKey)}
-      >
-        <ChevronLeft size="64" />
-      </div>{/if}
-    {#if next !== -1}<div
-        class="absolute top-1/2 right-2 text-6xl z-30 border-4 rounded-full text-white cursor-pointer hover:bg-white hover:border-neutral-500 hover:text-neutral-500 border-white transition-colors"
-        on:click={() => ($selected = $gallery[next].fullKey)}
-      >
-        <ChevronRight size="64" />
-      </div>{/if}
     <div
       class="lightbox-container"
       transition:fade={{ duration: 200 }}
@@ -130,6 +118,7 @@
       on:wheel|preventDefault
     >
       <div class="lightbox-photo relative" on:click|self={close}>
+        <div />
         <figure
           class="zoom shadow-2xl mb-4"
           on:mousemove={zoom}
@@ -144,7 +133,21 @@
             draggable="false"
           />
         </figure>
+
         <div class="flex gap-1 md:gap-2">
+          <div
+            class="relative md:absolute md:top-1/2 md:left-2 text-xl md:text-6xl z-30 border-4 rounded-full transition-colors {last ===
+            -1
+              ? 'cursor-not-allowed bg-neutral-300 text-neutral-400 border-neutral-400 hover:text-red-300 hover:border-red-300'
+              : 'text-white cursor-pointer hover:bg-white hover:border-neutral-500 hover:text-neutral-500 border-white'}"
+            on:click={() => {
+              if (last > -1) {
+                $selected = $gallery[last].fullKey;
+              }
+            }}
+          >
+            <ChevronLeft class="w-8 h-8 md:w-16 md:h-16" />
+          </div>
           <Button colour="neutral" clickHandler={() => goto('/file/' + $selected)}
             ><CloudDownload slot="icon" />Download</Button
           >
@@ -171,7 +174,21 @@
               ><Trash slot="icon" />Delete</Button
             >
           {/if}
+          <div
+            class="relative md:absolute md:top-1/2 md:right-2 text-xl md:text-6xl z-30 border-4 rounded-full  transition-colors {next ===
+            -1
+              ? 'cursor-not-allowed bg-neutral-300 text-neutral-400 border-neutral-400 hover:text-red-300 hover:border-red-300'
+              : 'text-white cursor-pointer hover:bg-white hover:border-neutral-500 hover:text-neutral-500 border-white'}"
+            on:click={() => {
+              if (next !== -1) {
+                $selected = $gallery[next].fullKey;
+              }
+            }}
+          >
+            <ChevronRight class="w-8 h-8 md:w-16 md:h-16" />
+          </div>
         </div>
+
         <dialog
           class="backdrop:bg-gray-50 backdrop:bg-opacity-80 w-96 bg-white z-20 rounded border-2 shadow"
           style="border-color: {colour}"
@@ -196,7 +213,7 @@
       transform: translate3d(0, 0, 0);
     }
     &-photo {
-      @apply w-full h-full flex flex-col justify-center items-center text-white;
+      @apply w-full h-full flex flex-col justify-between items-center text-white;
     }
   }
   @media (hover: hover) {

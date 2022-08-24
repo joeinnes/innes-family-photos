@@ -58,6 +58,7 @@ export const POST: Action = async ({ request }) => {
 
   try {
     const formData = await request.formData();
+    const utcOffset = formData.get('offset') || '+0200';
     const files = formData.getAll('files') as File[];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -65,7 +66,6 @@ export const POST: Action = async ({ request }) => {
       const fileBuffer = Buffer.from(arrayBuffer);
       const type = file.type;
       // TODO: Until #11 is implemented, hardcode the UTC offset. 
-      const utcOffset = '+0200';
       let DateTime;
 
       try {
