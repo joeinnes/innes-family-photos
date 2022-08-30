@@ -96,10 +96,10 @@ export const POST: Action = async ({ request }) => {
       }
       const month = (DateTime.getUTCMonth() + 1).toString().padStart(2, '0');
       const year = DateTime.getUTCFullYear();
-      const day = DateTime.getUTCDate();
-      const hour = DateTime.getUTCHours();
-      const minute = DateTime.getUTCMinutes();
-      const second = DateTime.getUTCSeconds();
+      const day = DateTime.getUTCDate().toString().padStart(2, '0');
+      const hour = DateTime.getUTCHours().toString().padStart(2, '0');
+      const minute = DateTime.getUTCMinutes().toString().padStart(2, '0');
+      const second = DateTime.getUTCSeconds().toString().padStart(2, '0');
       const fileName = `${year}/${month}/${day}/${hour}:${minute}:${second}Z${utcOffset}-${file.name}`;
       uploadFile(fileBuffer, fileName, type);
     }

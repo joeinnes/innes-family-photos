@@ -95,7 +95,6 @@
 {:then _}
   <div class="image-container group" on:click={() => clickHandler(image.fullKey)}>
     <img src={imgUrl} alt={imgUrl} in:fly|local={{ y: 50, duration: 200 }} loading="lazy" />
-
     <div class="date-overlay translate-y-full group-hover:translate-y-0">
       {format(
         parse(image.fullKey.split('Z')[0], 'yyyy/MM/dd/hh:mm:ss', new Date()),
@@ -145,9 +144,9 @@
 
 <style lang="scss">
   .skeleton {
-    @apply flex justify-center items-center w-full h-64 aspect-video animate-pulse rounded text-gray-200;
+    @apply flex justify-center items-center w-full h-64 aspect-video animate-pulse rounded-2xl text-gray-200;
     &.error {
-      @apply bg-red-300;
+      @apply bg-red-300 animate-none cursor-not-allowed;
     }
     &.loading {
       @apply bg-gray-300;
@@ -168,25 +167,4 @@
       @apply transform absolute bottom-0 text-neutral-50 text-sm font-thin bg-gradient-to-t from-neutral-900 to-transparent pl-2 pt-4 pb-1 select-none cursor-pointer transition-transform duration-200 w-full;
     }
   }
-  /*
-  div {
-    @apply w-full md:w-auto flex-grow relative rounded-2xl overflow-hidden;
-    img {
-      vertical-align: bottom;
-      @apply h-64 min-w-full max-w-full flex-1 flex-grow transform cursor-pointer  bg-neutral-400 object-cover transition-transform;
-    }
-  }*/
-
-  /*.love-overlay {
-    @apply absolute top-1 -right-1 p-2  transform transition-transform  text-neutral-50 text-sm font-thin bg-gradient-to-t select-none cursor-pointer rounded-r;
-  }
-  .collection-overlay {
-    @apply hidden absolute top-1 -right-1 p-2 transform transition-transform text-neutral-50 text-sm font-thin bg-gradient-to-t select-none cursor-pointer rounded-r;
-  }
-  div.grid {
-    @apply aspect-square h-full w-full;
-    img {
-      @apply h-full w-auto object-cover;
-    }
-  }*/
 </style>
