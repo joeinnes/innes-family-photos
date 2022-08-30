@@ -86,3 +86,5 @@ self.addEventListener("push", (event) => {
     })
   );
 });
+
+self.addEventListener('error', (event) => { console.log(event) });

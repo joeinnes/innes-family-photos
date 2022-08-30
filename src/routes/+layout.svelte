@@ -10,6 +10,11 @@
   onMount(async () => {
     try {
       const reg = await navigator.serviceWorker.ready;
+      if (reg && reg.active) {
+        reg.active.onerror = (e) => {
+          console.log(e);
+        };
+      }
       let sub = await reg.pushManager.getSubscription();
       if (!sub) {
         sub = await reg.pushManager.subscribe({
@@ -25,7 +30,7 @@
         body: JSON.stringify(sub)
       });
     } catch (e) {
-      console.error('There was a problem registering for push notifications');
+      console.log('There was a problem registering for push notifications');
     }
   });
 </script>

@@ -6,13 +6,16 @@
   import Lightbox from '$lib/components/Lightbox.svelte';
   import Gallery from '$lib/components/Gallery.svelte';
   import Timeline from '$lib/components/Timeline.svelte';
+  import { parse, format } from 'date-fns';
 
   export let data: PageData;
   const { auth } = $page.data;
 
   const getMonthTitle = (month: string) => {
     try {
-      return new Date(month).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+      const monthDate = parse(month, 'yyyy/MM', new Date());
+      const title = format(monthDate, 'MMMM yyyy');
+      return title;
     } catch (e) {
       return 'Error';
     }
