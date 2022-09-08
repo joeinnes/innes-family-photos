@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 
 const lovedInit = browser ? localStorage.getItem('loved') || '[]' : '[]';
 export const loved = writable(JSON.parse(lovedInit));

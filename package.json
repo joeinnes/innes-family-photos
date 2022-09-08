@@ -46,5 +46,8 @@
 		"vite": "^3.0.9",
 		"web-push": "^3.5.0"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"jimp": "^0.16.1"
+	}
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { browser } from '$app/env';
+  import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { goto, invalidate } from '$app/navigation';
   import Button from '$lib/components/Button.svelte';
@@ -60,7 +60,7 @@
         icon: Trash,
         colour: 'negative'
       };
-      invalidate();
+      invalidate('/');
     } catch (e) {
       console.error(e);
       $notify = {
@@ -111,9 +111,9 @@
 {#if $selected}
   <div class="z-20 select-none">
     <div
-      class="lightbox-container"
+      class="lightbox-container transition-colors duration-200"
       transition:fade={{ duration: 200 }}
-      style="background-color: {colour}f0; "
+      style="background-color: {colour}f0;"
       on:scroll|preventDefault
       on:wheel|preventDefault
     >
@@ -122,7 +122,7 @@
         <figure
           class="zoom shadow-2xl mb-4"
           on:mousemove={zoom}
-          style="background-image: url({'/file/' + $selected})"
+          style="background-image: url({'/file/' + $selected}); background-color: #000;"
           draggable="false"
         >
           <img

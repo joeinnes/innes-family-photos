@@ -1,9 +1,12 @@
 import { json } from '@sveltejs/kit';
+import Jimp from 'jimp';
+
 import { deleteFile, getFile } from "$lib/s3";
 import { getAuthStatus } from "$lib/auth_middleware";
 import type { GetObjectOutput } from "aws-sdk/clients/s3";
 import type { RequestHandler } from "@sveltejs/kit";
-export const GET: RequestHandler = async ({ params, request }) => {
+export const GET: RequestHandler = async ({ params, request, url }) => {
+  const resizeTo = parseInt(url.searchParams.get('size'), 10);
   const auth = getAuthStatus(request);
   if (!auth) {
     return new Response(undefined, { status: 401 })
@@ -13,7 +16,15 @@ export const GET: RequestHandler = async ({ params, request }) => {
   try {
     const file = await getFile(id) as GetObjectOutput & { code: number, Body: Buffer };
     if (file.code) throw file;
-    return new Response(file.Body, {
+    let responseBody;
+    if (resizeTo && !isNaN(resizeTo)) {
+      const image = await Jimp.read(file.Body);
+      responseBody = await image.resize(resizeTo, Jimp.AUTO).getBufferAsync('image/jpeg');
+    } else {
+      responseBody = file.Body
+    }
+
+    return new Response(responseBody, {
       status: 200,
       headers: {
         "Content-Type": file.ContentType || '',

@@ -16,12 +16,22 @@
     return;
   };
 
-  const imgUrl = `/file/${image.fullKey}`;
+  const imgUrl = `/file/${image.fullKey}?size=500`;
 
   let grid = false;
   let root: HTMLElement;
   let loaded = false;
   let isSelected = false;
+  let time = '';
+
+  try {
+    time = format(
+      parse(image.fullKey.split('Z')[0], 'yyyy/MM/dd/HH:mm:ss', new Date()),
+      'dd MMM yyyy, HH:mm'
+    );
+  } catch (e) {
+    console.log(e);
+  }
 
   const love = (image: Image) => {
     const index = $loved.findIndex((el: Image) => {
@@ -96,10 +106,7 @@
   <div class="image-container group" on:click={() => clickHandler(image.fullKey)}>
     <img src={imgUrl} alt={imgUrl} in:fly|local={{ y: 50, duration: 200 }} loading="lazy" />
     <div class="date-overlay translate-y-full group-hover:translate-y-0">
-      {format(
-        parse(image.fullKey.split('Z')[0], 'yyyy/MM/dd/hh:mm:ss', new Date()),
-        'dd MMM yyyy, hh:mm'
-      )}
+      {time}
     </div>
 
     <div class="controls">
