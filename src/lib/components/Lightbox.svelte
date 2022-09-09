@@ -1,5 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
+  import { enhance } from '$app/forms';
   import { page } from '$app/stores';
   import { goto, invalidateAll } from '$app/navigation';
   import Button from '$lib/components/Button.svelte';
@@ -9,6 +10,7 @@
   import Messenger from './icons/Messenger.svelte';
   import WhatsApp from './icons/WhatsApp.svelte';
   import { notify } from '$lib/stores/notify';
+  import Dialog from '$lib/components/Dialog.svelte';
 
   export let canClose = true;
 
@@ -17,6 +19,7 @@
   let el: HTMLImageElement;
   let dialog: HTMLDialogElement;
   let colour = '#000000';
+  let updateFileName = false;
 
   const zoom = (e: (MouseEvent | TouchEvent) & { currentTarget: HTMLElement }) => {
     const zoomer = e.currentTarget;
@@ -170,6 +173,9 @@
             ><Button colour="neutral"><Messenger slot="icon" />Share on Messenger</Button></a
           >
           {#if auth === 'admin'}
+            <Button colour="neutral" clickHandler={() => (updateFileName = true)}
+              ><Trash slot="icon" />Rename</Button
+            >
             <Button colour="neutral" clickHandler={() => dialog.showModal()}
               ><Trash slot="icon" />Delete</Button
             >
@@ -201,6 +207,22 @@
             <Button colour="negative" clickHandler={deleteFile}>Yes, delete</Button>
           </div>
         </dialog>
+        <Dialog open={updateFileName}
+          ><svelte:fragment slot="title">Update File Name</svelte:fragment>
+          <form method="POST" action="/api/photos/rename" use:enhance>
+            <label
+              >Old file name
+              <input name="oldKey" bind:value={$selected} type="hidden" />
+            </label>
+            <label
+              >New file name
+              <input name="newKey" value={$selected} class="mb-4" />
+            </label>
+            <Button type="submit" colour="primary" clickHandler={() => (updateFileName = false)}
+              >Submit</Button
+            >
+          </form></Dialog
+        >
       </div>
     </div>
   </div>

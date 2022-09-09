@@ -3,7 +3,6 @@ import type {
   DeleteObjectRequest,
   GetObjectRequest,
   HeadObjectRequest,
-  CopyObjectRequest,
   ListObjectsV2Request,
   PutObjectRequest
 } from 'aws-sdk/clients/s3';
@@ -46,7 +45,7 @@ export const listItems = async (bucketParams: ListObjectsV2Request) => {
   return items;
 };
 
-export const uploadFile = async (file: Buffer | string, key: string, type: string) => {
+export const uploadFile = async (file: Buffer | string, key: string, type = 'image/jpeg') => {
   try {
     let params: PutObjectRequest = {
       Bucket: process.env.S3_BUCKET || '',
@@ -123,23 +122,12 @@ export const renameFile = async (oldKey: string, newKey: string) => {
     if (!oldKey && !newKey) {
       throw new Error('One or more keys were not provided');
     }
-    let params: CopyObjectRequest = {
-      Bucket: process.env.S3_BUCKET || '',
-      CopySource: process.env.S3_BUCKET + oldKey,
-      Key: newKey
-    };
-    if (process.env.S3_ENCRYPTION_KEY) {
-      const ssecKey = Buffer.alloc(32, process.env.S3_ENCRYPTION_KEY);
-      params = {
-        ...params,
-        SSECustomerAlgorithm: 'AES256',
-        SSECustomerKey: ssecKey
-      };
-    }
-    await s3.copyObject(params).promise();
+    const file = await getFile(oldKey);
+    await uploadFile(file.Body, newKey);
     await deleteFile(oldKey);
     return;
   } catch (e) {
+    console.log(e)
     return e;
   }
 };
@@ -153,6 +141,7 @@ export const deleteFile = async (key: string) => {
       Bucket: process.env.S3_BUCKET || '',
       Key: key
     };
+
     const res = await s3.deleteObject(params).promise();
 
     return res;
