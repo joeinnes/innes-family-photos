@@ -5,6 +5,7 @@
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
   import SideButton from '$lib/components/SideButton.svelte';
+  import ScrollToTopButton from '$lib/components/ScrollToTopButton.svelte';
   import { onMount } from 'svelte';
 
   onMount(async () => {
@@ -46,6 +47,7 @@
   <Splash />
   <Notifier />
   <SideButton />
+  <ScrollToTopButton />
 </div>
 
 <style lang="scss">
