@@ -16,7 +16,7 @@ export const POST: Action = async ({ request }) => {
   const { name, content } = body;
 
   await createCollection(JSON.stringify(content), `collections/${name}`);
-  return;
+  return new Response(undefined, { status: 200 });
 };
 
 export const DELETE: Action = async ({ request, url }) => {
@@ -32,7 +32,7 @@ export const DELETE: Action = async ({ request, url }) => {
 
   try {
     await deleteFile(`collections/${name}`);
-    return;
+    return new Response(undefined, { status: 200 });
   } catch (e) {
     throw error(500, 'Could not delete file.');
   }

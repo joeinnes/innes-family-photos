@@ -1,7 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
-  import { goto, invalidate } from '$app/navigation';
+  import { goto, invalidateAll } from '$app/navigation';
   import Button from '$lib/components/Button.svelte';
   import { fade } from 'svelte/transition';
   import { selected, gallery } from '$lib/stores/selected';
@@ -60,7 +60,7 @@
         icon: Trash,
         colour: 'negative'
       };
-      invalidate('/');
+      invalidateAll();
     } catch (e) {
       console.error(e);
       $notify = {

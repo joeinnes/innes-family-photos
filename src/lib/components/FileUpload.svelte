@@ -2,7 +2,7 @@
   import { notify } from '$lib/stores/notify';
   import { Camera, CheckCircle } from 'svelte-heros';
   import Button from '$lib/components/Button.svelte';
-  import { invalidate } from '$app/navigation';
+  import { invalidateAll } from '$app/navigation';
   import { ExifParserFactory } from 'ts-exif-parser';
   import { fly } from 'svelte/transition';
   import { onMount } from 'svelte';
@@ -109,7 +109,7 @@
         heading: 'Files uploaded!',
         callback: () => {
           form.reset();
-          invalidate('/');
+          invalidateAll();
         }
       };
     } catch (e) {

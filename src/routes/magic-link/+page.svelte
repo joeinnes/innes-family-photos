@@ -4,7 +4,7 @@
 
   import Button from '$lib/components/Button.svelte';
   import { notify } from '$lib/stores/notify';
-  import { invalidate } from '$app/navigation';
+  import { invalidateAll } from '$app/navigation';
   import { Link, Trash, XCircle } from 'svelte-heros';
 
   let creating = false;
@@ -26,7 +26,7 @@
     } catch (e) {
       console.error(e);
     } finally {
-      await invalidate('/magic-link');
+      await invalidateAll();
       creating = false;
       $notify = {
         active: true,
@@ -44,7 +44,7 @@
         method: 'DELETE'
       });
 
-      await invalidate('/magic-link');
+      await invalidateAll();
 
       $notify = {
         active: true,

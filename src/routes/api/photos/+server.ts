@@ -58,9 +58,9 @@ export const POST: Action = async ({ request }) => {
       const minute = DateTime.getUTCMinutes().toString().padStart(2, '0');
       const second = DateTime.getUTCSeconds().toString().padStart(2, '0');
       const fileName = `${year}/${month}/${day}/${hour}:${minute}:${second}Z${utcOffset}-${file.name}`;
-      uploadFile(fileBuffer, fileName, type);
+      await uploadFile(fileBuffer, fileName, type);
     }
-    return;
+    return new Response(undefined, { status: 200 });
   } catch (e) {
     console.error(e);
     throw error(500, 'Could not upload photo');

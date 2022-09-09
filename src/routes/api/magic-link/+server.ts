@@ -17,7 +17,7 @@ export const POST: Action = async ({ url, request }) => {
   }
 
   await generateMagicLink(persistent);
-  return;
+  return new Response(undefined, { status: 200 });
 };
 
 export const DELETE: Action = async ({ request, url }) => {
@@ -31,7 +31,7 @@ export const DELETE: Action = async ({ request, url }) => {
   }
   try {
     await deleteFile(`magiclinks/${name}`);
-    return;
+    return new Response(undefined, { status: 200 });
   } catch (e) {
     throw error(500, 'Could not delete file.');
   }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto, invalidate } from '$app/navigation';
+  import { goto, invalidateAll } from '$app/navigation';
   import { Logout } from 'svelte-heros';
   import Heading from '$lib/components/Heading.svelte';
   import FileUpload from '$lib/components/FileUpload.svelte';
@@ -12,7 +12,7 @@
     await fetch('/api/auth', {
       method: 'POST'
     });
-    await invalidate('/');
+    await invalidateAll();
     goto('/');
   };
 </script>

@@ -7,8 +7,8 @@
   import Button from '$lib/components/Button.svelte';
   import Dialog from '$lib/components/Dialog.svelte';
   import { onMount } from 'svelte';
-  import { CheckCircle, Collection, Trash } from 'svelte-heros';
-  import { invalidate } from '$app/navigation';
+  import { CheckCircle, Collection, ExclamationCircle, Trash } from 'svelte-heros';
+  import { invalidateAll } from '$app/navigation';
   import { page } from '$app/stores';
   export let data: PageData;
   let deleteIntent = false;
@@ -22,113 +22,154 @@
   let collectionLengthOnMount = 0;
 
   const createCollection = async (name: string) => {
-    working = true;
-    const uriSafeName = encodeURIComponent(name);
-    const content = $collection.map((el) => el.fullKey);
-    await fetch('/api/collection', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: uriSafeName,
-        content
-      })
-    });
-    $collection = [];
-    collectionLengthOnMount = 0;
-    invalidate('/collection');
-    $notify = {
-      active: true,
-      colour: 'success',
-      message: 'Created collection',
-      icon: Collection
-    };
-    working = false;
+    try {
+      working = true;
+      const uriSafeName = encodeURIComponent(name);
+      const content = $collection.map((el) => el.fullKey);
+      await fetch('/api/collection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: uriSafeName,
+          content
+        })
+      });
+      $collection = [];
+      collectionLengthOnMount = 0;
+      await invalidateAll();
+      $notify = {
+        active: true,
+        colour: 'success',
+        message: 'Created collection',
+        icon: Collection
+      };
+    } catch (e) {
+      $notify = {
+        active: true,
+        colour: 'red',
+        message: 'Error',
+        icon: ExclamationCircle
+      };
+    } finally {
+      working = false;
+    }
   };
 
   const updateCollection = async (name: string) => {
-    working = true;
-    const collectionToUpdate = collections.find((el) => el.name === name);
-    const uriSafeName = encodeURIComponent(name);
-    if (!collectionToUpdate) return;
-    const newImages = collectionToUpdate.images.filter((el) => !$collection.includes(el));
-    const content = newImages.map((el) => el.fullKey);
-    await fetch('/api/collection', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: uriSafeName,
-        content
-      })
-    });
-    $notify = {
-      active: true,
-      colour: 'success',
-      message: 'Collection updated',
-      icon: CheckCircle
-    };
-    updateIntent = false;
-    $collection = [];
-    invalidate('/collection');
-    working = false;
-    collectionLengthOnMount = 0;
+    try {
+      working = true;
+      const collectionToUpdate = collections.find((el) => el.name === name);
+      if (!collectionToUpdate) return;
+
+      const newImages = collectionToUpdate.images.filter((el) => !$collection.includes(el));
+      const content = newImages.map((el) => el.fullKey);
+      await fetch('/api/collection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name,
+          content
+        })
+      });
+      $notify = {
+        active: true,
+        colour: 'success',
+        message: 'Collection updated',
+        icon: CheckCircle
+      };
+      updateIntent = false;
+      $collection = [];
+      await invalidateAll();
+      working = false;
+      collectionLengthOnMount = 0;
+    } catch (e) {
+      $notify = {
+        active: true,
+        colour: 'red',
+        message: 'Error',
+        icon: ExclamationCircle
+      };
+    } finally {
+      working = false;
+    }
   };
 
   const addToCollection = async (name: string) => {
-    working = true;
-    const collectionToUpdate = collections.find((el) => el.name === name);
-    if (!collectionToUpdate) return;
-    const uriSafeName = encodeURIComponent(name);
-    const newImages = $collection.filter((el) => !collectionToUpdate.images.includes(el));
+    try {
+      working = true;
+      const collectionToUpdate = collections.find((el) => el.name === name);
+      if (!collectionToUpdate) return;
+      const newImages = $collection.filter((el) => !collectionToUpdate.images.includes(el));
 
-    const content = Array.from(
-      new Set([...collectionToUpdate.images, ...newImages].map((el) => el.fullKey))
-    );
+      const content = Array.from(
+        new Set([...collectionToUpdate.images, ...newImages].map((el) => el.fullKey))
+      );
 
-    await fetch('/api/collection', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: uriSafeName,
-        content
-      })
-    });
-    $notify = {
-      active: true,
-      colour: 'success',
-      message: 'Collection updated',
-      icon: CheckCircle
-    };
-    collectionLengthOnMount = 0;
-    addIntent = false;
-    $collection = [];
-    existingCollection = '';
-    invalidate('/');
-    working = false;
+      await fetch('/api/collection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name,
+          content
+        })
+      });
+      $notify = {
+        active: true,
+        colour: 'success',
+        message: 'Collection updated',
+        icon: CheckCircle
+      };
+      collectionLengthOnMount = 0;
+      addIntent = false;
+      $collection = [];
+      existingCollection = '';
+      await invalidateAll();
+      working = false;
+    } catch (e) {
+      $notify = {
+        active: true,
+        colour: 'red',
+        message: 'Error',
+        icon: ExclamationCircle
+      };
+    } finally {
+      working = false;
+    }
   };
   const deleteCollection = async (name: string) => {
-    working = true;
-    const uriSafeName = encodeURIComponent(name);
-    await fetch(`/api/collection?name=${uriSafeName}`, {
-      method: 'DELETE'
-    });
-    $notify = {
-      active: true,
-      colour: 'negative',
-      message: 'Deleted collection',
-      icon: Trash
-    };
-    $collection = [];
-    selectedCollection = '';
-    deleteIntent = false;
-    invalidate('/');
-    working = false;
-    collectionLengthOnMount = 0;
+    try {
+      working = true;
+      await fetch(`/api/collection?name=${name}`, {
+        method: 'DELETE'
+      });
+      $notify = {
+        active: true,
+        colour: 'negative',
+        message: 'Deleted collection',
+        icon: Trash
+      };
+      $collection = [];
+      selectedCollection = '';
+      deleteIntent = false;
+      await invalidateAll();
+      working = false;
+      collectionLengthOnMount = 0;
+    } catch (e) {
+      $notify = {
+        active: true,
+        colour: 'red',
+        message: 'Error',
+        icon: ExclamationCircle
+      };
+    } finally {
+      working = false;
+    }
   };
 
   onMount(() => {
@@ -178,7 +219,7 @@
       >Choose collection to add to
       <select bind:value={existingCollection}>
         {#each collections as thisCollection}
-          <option value={thisCollection.name}>{thisCollection.name}</option>
+          <option value={thisCollection.name}>{decodeURI(thisCollection.name)}</option>
         {/each}
       </select>
     </label>
@@ -220,7 +261,7 @@
   </section>
 
   <Dialog open={deleteIntent}>
-    <svelte:fragment slot="title">Delete {selectedCollection}?</svelte:fragment>
+    <svelte:fragment slot="title">Delete {decodeURI(selectedCollection)}?</svelte:fragment>
     <p>Are you sure? You can't undo this.</p>
     <div class="flex gap-2 justify-end pt-4">
       <Button colour="neutral" disabled={working} clickHandler={() => (deleteIntent = false)}
@@ -235,7 +276,9 @@
 
   <Dialog open={updateIntent}>
     <svelte:fragment slot="title"
-      >Remove {$collection.length} photo{$collection.length > 1 ? 's' : ''} from {selectedCollection}?</svelte:fragment
+      >Remove {$collection.length} photo{$collection.length > 1 ? 's' : ''} from {decodeURI(
+        selectedCollection
+      )}?</svelte:fragment
     >
     <p>Removing the photos from the collection will not delete them from the timeline.</p>
     <div class="flex gap-2 justify-end pt-4">
