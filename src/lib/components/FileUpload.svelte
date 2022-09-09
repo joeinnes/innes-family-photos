@@ -99,7 +99,7 @@
         throw new Error('Files not uploaded.');
       }
 
-      target.reset();
+      reset();
       dialog.close();
 
       $notify = {

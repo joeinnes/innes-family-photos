@@ -14,6 +14,17 @@
           >{import.meta.env.VITE_SITE_CONTACT}</a
         >
       </p>
+      <h3 class="font-bold mt-4 text-lg">Pages</h3>
+
+      <p>
+        <a href="/about">About</a>
+      </p>
+      <p>
+        <a href="/collections">Collections</a>
+      </p>
+      <p>
+        <a href="/loved">Loved</a>
+      </p>
     </div>
   </div>
 </footer>

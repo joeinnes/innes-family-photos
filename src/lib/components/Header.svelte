@@ -55,7 +55,7 @@
     }
   }
   .links {
-    @apply flex gap-4 pr-4;
+    @apply flex gap-4 md:pr-4;
     a {
       @apply text-sm uppercase text-neutral-400 font-bold tracking-wide  hover:text-neutral-700 transition-colors;
     }

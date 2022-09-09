@@ -1,8 +1,9 @@
 <section class="prose prose-primary my-4">
   <h1>About</h1>
   <p>
-    Traist Photos is a web app for sharing photos securely with friends and family. No more secret
-    Instagrams, or private WhatsApp groups, or Messenger chats, just a simple, self-hosted solution.
+    {import.meta.env.VITE_SITE_NAME} is a web app for sharing photos securely with friends and family.
+    No more secret Instagrams, or private WhatsApp groups, or Messenger chats, just a simple, self-hosted
+    solution.
   </p>
   <p>Sharing private moments is safe, simple, and elegant.</p>
   <h2>How Safe Are My Photos?</h2>
