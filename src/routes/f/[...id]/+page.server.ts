@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
-import { doesFileExist } from "$lib/s3";
-import { getAuthStatus } from "$lib/auth_middleware";
+import { doesFileExist } from '$lib/s3';
+import { getAuthStatus } from '$lib/auth_middleware';
 
 export const load: PageServerLoad = async ({ request, params }) => {
   const auth = getAuthStatus(request);
@@ -19,5 +19,5 @@ export const load: PageServerLoad = async ({ request, params }) => {
 
   return {
     id: params.id || ''
-  }
-}
+  };
+};

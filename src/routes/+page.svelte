@@ -32,11 +32,11 @@
   $: {
     const { list } = data;
     list
-      .sort((a: S3Object, b: S3Object) => {
-        if (!a.Key || !b.Key) return;
-        return a.Key.localeCompare(b.Key);
+      .sort((a, b) => {
+        if (!a.Key || !b.Key) return 0;
+        return a.Key.localeCompare(b.Key) || 0;
       })
-      .forEach((el: S3Object) => {
+      .forEach((el) => {
         if (!el || !el.Key) return;
         let month = el.Key.substring(0, 7);
         if (images[month]) {

@@ -20,4 +20,4 @@ Insert the following code in the `head` section of your pages:
     <meta name="msapplication-TileColor" content="#0c6291">
     <meta name="theme-color" content="#0c6291">
 
-*Optional* - Check your favicon with the [favicon checker](https://realfavicongenerator.net/favicon_checker)
+_Optional_ - Check your favicon with the [favicon checker](https://realfavicongenerator.net/favicon_checker)

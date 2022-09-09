@@ -1,6 +1,6 @@
 import type { Action } from './$types';
-import { error } from "@sveltejs/kit";
-import { uploadFile } from '$lib/s3'
+import { error } from '@sveltejs/kit';
+import { uploadFile } from '$lib/s3';
 import { notifyAll } from '$lib/webpush';
 
 export const POST: Action = async ({ request }) => {
@@ -12,4 +12,4 @@ export const POST: Action = async ({ request }) => {
   } catch (e) {
     error(400, 'No endpoint supplied');
   }
-}
+};

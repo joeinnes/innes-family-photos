@@ -11,12 +11,11 @@ export const notifyAll = async (message: string) => {
   const subscriptions = await listItems({
     Bucket: process.env.S3_BUCKET || '',
     Prefix: 'subscriptions/'
-  })
+  });
 
-  console.log(`Notifying ${subscriptions.length} subscriber(s)`)
+  console.log(`Notifying ${subscriptions.length} subscriber(s)`);
   let stale = 0;
   subscriptions.forEach(async (file) => {
-
     try {
       const subDetails = await getFile(file.Key);
       const sub = JSON.parse(subDetails.Body.toString());
@@ -34,7 +33,6 @@ export const notifyAll = async (message: string) => {
         console.error(e);
       }
     }
-  })
-  console.log(`${stale} stale subscription(s) removed.`)
-
-}
+  });
+  console.log(`${stale} stale subscription(s) removed.`);
+};

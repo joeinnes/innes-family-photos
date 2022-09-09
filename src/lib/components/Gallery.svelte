@@ -7,7 +7,7 @@
 
   import { selected, gallery } from '$lib/stores/selected';
   import { loved } from '$lib/stores/loved';
-  import { MenuAlt2, ViewGrid, Heart } from 'svelte-heros';
+  import { MenuAlt2, ViewGrid } from 'svelte-heros';
 
   type Image = {
     fullKey: string;
@@ -54,13 +54,14 @@
   $: {
     theseImages = images.sort((a, b) => {
       try {
-        return b?.fullKey?.localeCompare(a.fullKey);
+        return b?.fullKey?.localeCompare(a.fullKey) || 0;
       } catch (e) {
         console.error(e);
+        return 0;
       }
     });
     isLoved = (img: Image) => {
-      return $loved.find((el) => el.fullKey === img.fullKey) ? true : false;
+      return $loved.find((el: Image) => el.fullKey === img.fullKey) ? true : false;
     };
   }
 </script>
@@ -116,30 +117,11 @@
       }
       div {
         @apply w-full md:w-auto flex-grow relative rounded-2xl overflow-hidden;
-        img {
-          vertical-align: bottom;
-          @apply h-64 min-w-full max-w-full flex-1 flex-grow transform cursor-pointer  bg-neutral-400 object-cover transition-transform;
-        }
-      }
-      .date-overlay {
-        @apply absolute bottom-0 left-0 right-0 text-neutral-50 text-sm  font-thin bg-gradient-to-t from-neutral-900 to-transparent pl-2 pt-4 pb-1 select-none cursor-pointer;
-      }
-      .love-overlay {
-        @apply absolute top-1 -right-1 p-2  transform transition-transform  text-neutral-50 text-sm font-thin bg-gradient-to-t select-none cursor-pointer rounded-r;
-      }
-      .selection-overlay {
-        @apply absolute top-1 -right-1 p-2  transform transition-transform  text-neutral-50 text-sm font-thin bg-gradient-to-t select-none cursor-pointer rounded-r;
       }
     }
 
     .gallery.gallery-grid {
       @apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
-      > div {
-        @apply aspect-square h-full w-full;
-        img {
-          @apply h-full w-auto object-cover;
-        }
-      }
     }
   }
 </style>

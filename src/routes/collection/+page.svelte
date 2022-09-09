@@ -25,7 +25,7 @@
     working = true;
     const uriSafeName = encodeURIComponent(name);
     const content = $collection.map((el) => el.fullKey);
-    await fetch('/collection', {
+    await fetch('/api/collection', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -51,9 +51,10 @@
     working = true;
     const collectionToUpdate = collections.find((el) => el.name === name);
     const uriSafeName = encodeURIComponent(name);
+    if (!collectionToUpdate) return;
     const newImages = collectionToUpdate.images.filter((el) => !$collection.includes(el));
     const content = newImages.map((el) => el.fullKey);
-    await fetch('/collection', {
+    await fetch('/api/collection', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -79,6 +80,7 @@
   const addToCollection = async (name: string) => {
     working = true;
     const collectionToUpdate = collections.find((el) => el.name === name);
+    if (!collectionToUpdate) return;
     const uriSafeName = encodeURIComponent(name);
     const newImages = $collection.filter((el) => !collectionToUpdate.images.includes(el));
 
@@ -86,7 +88,7 @@
       new Set([...collectionToUpdate.images, ...newImages].map((el) => el.fullKey))
     );
 
-    await fetch('/collection', {
+    await fetch('/api/collection', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -106,13 +108,13 @@
     addIntent = false;
     $collection = [];
     existingCollection = '';
-    invalidate();
+    invalidate('/');
     working = false;
   };
   const deleteCollection = async (name: string) => {
     working = true;
     const uriSafeName = encodeURIComponent(name);
-    await fetch(`/collection/${uriSafeName}`, {
+    await fetch(`/api/collection?name=${uriSafeName}`, {
       method: 'DELETE'
     });
     $notify = {
@@ -124,7 +126,7 @@
     $collection = [];
     selectedCollection = '';
     deleteIntent = false;
-    invalidate();
+    invalidate('/');
     working = false;
     collectionLengthOnMount = 0;
   };

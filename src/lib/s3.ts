@@ -1,15 +1,21 @@
 import AWS from 'aws-sdk';
-import type { DeleteObjectRequest, GetObjectRequest, HeadObjectRequest, CopyObjectRequest, ListObjectsV2Request, PutObjectRequest } from 'aws-sdk/clients/s3';
+import type {
+  DeleteObjectRequest,
+  GetObjectRequest,
+  HeadObjectRequest,
+  CopyObjectRequest,
+  ListObjectsV2Request,
+  PutObjectRequest
+} from 'aws-sdk/clients/s3';
 
 AWS.config.update({
   accessKeyId: process.env.S3_ACCESS_KEY,
-  secretAccessKey: process.env.S3_SECRET_KEY,
-})
+  secretAccessKey: process.env.S3_SECRET_KEY
+});
 const ep = new AWS.Endpoint(process.env.S3_ENDPOINT || '');
 const s3 = new AWS.S3({ endpoint: ep });
 
 export const listItems = async (bucketParams: ListObjectsV2Request) => {
-
   const items: AWS.S3.Object[] = [];
   let truncated = true;
 
@@ -18,8 +24,8 @@ export const listItems = async (bucketParams: ListObjectsV2Request) => {
   if (!nextBucketParams.Bucket) {
     nextBucketParams = {
       ...bucketParams,
-      Bucket: process.env.S3_BUCKET || '',
-    }
+      Bucket: process.env.S3_BUCKET || ''
+    };
   }
   while (truncated) {
     try {
@@ -38,7 +44,7 @@ export const listItems = async (bucketParams: ListObjectsV2Request) => {
     }
   }
   return items;
-}
+};
 
 export const uploadFile = async (file: Buffer | string, key: string, type: string) => {
   try {
@@ -47,14 +53,14 @@ export const uploadFile = async (file: Buffer | string, key: string, type: strin
       Body: file,
       Key: key,
       ContentType: type
-    }
+    };
     if (process.env.S3_ENCRYPTION_KEY) {
       const ssecKey = Buffer.alloc(32, process.env.S3_ENCRYPTION_KEY);
       params = {
         ...params,
         SSECustomerAlgorithm: 'AES256',
         SSECustomerKey: ssecKey
-      }
+      };
     }
     const res = await s3.putObject(params).promise();
     return res;
@@ -62,7 +68,7 @@ export const uploadFile = async (file: Buffer | string, key: string, type: strin
     console.error(e);
     return e;
   }
-}
+};
 
 export const createCollection = async (file: string, key: string) => {
   try {
@@ -71,14 +77,14 @@ export const createCollection = async (file: string, key: string) => {
       Body: file,
       Key: key,
       ContentType: 'text/plain'
-    }
+    };
     if (process.env.S3_ENCRYPTION_KEY) {
       const ssecKey = Buffer.alloc(32, process.env.S3_ENCRYPTION_KEY);
       params = {
         ...params,
         SSECustomerAlgorithm: 'AES256',
         SSECustomerKey: ssecKey
-      }
+      };
     }
     const res = await s3.putObject(params).promise();
     return res;
@@ -86,7 +92,7 @@ export const createCollection = async (file: string, key: string) => {
     console.error(e);
     return e;
   }
-}
+};
 
 export const getFile = async (key: string) => {
   try {
@@ -103,14 +109,14 @@ export const getFile = async (key: string) => {
         ...params,
         SSECustomerAlgorithm: 'AES256',
         SSECustomerKey: ssecKey
-      }
+      };
     }
     const res = await s3.getObject(params).promise();
     return res;
   } catch (e) {
     return e;
   }
-}
+};
 
 export const renameFile = async (oldKey: string, newKey: string) => {
   try {
@@ -128,7 +134,7 @@ export const renameFile = async (oldKey: string, newKey: string) => {
         ...params,
         SSECustomerAlgorithm: 'AES256',
         SSECustomerKey: ssecKey
-      }
+      };
     }
     await s3.copyObject(params).promise();
     await deleteFile(oldKey);
@@ -136,7 +142,7 @@ export const renameFile = async (oldKey: string, newKey: string) => {
   } catch (e) {
     return e;
   }
-}
+};
 
 export const deleteFile = async (key: string) => {
   try {
@@ -146,7 +152,7 @@ export const deleteFile = async (key: string) => {
     const params: DeleteObjectRequest = {
       Bucket: process.env.S3_BUCKET || '',
       Key: key
-    }
+    };
     const res = await s3.deleteObject(params).promise();
 
     return res;
@@ -154,7 +160,7 @@ export const deleteFile = async (key: string) => {
     console.error(e);
     return e;
   }
-}
+};
 
 export const doesFileExist = async (key: string) => {
   try {
@@ -164,23 +170,23 @@ export const doesFileExist = async (key: string) => {
     let params: HeadObjectRequest = {
       Bucket: process.env.S3_BUCKET || '',
       Key: key
-    }
+    };
     if (process.env.S3_ENCRYPTION_KEY) {
       const ssecKey = Buffer.alloc(32, process.env.S3_ENCRYPTION_KEY);
       params = {
         ...params,
         SSECustomerAlgorithm: 'AES256',
         SSECustomerKey: ssecKey
-      }
+      };
     }
     const res = await s3.headObject(params).promise();
 
     return !!res;
   } catch (e) {
-    console.error(e);
+    // console.error(e);
     return false;
   }
-}
+};
 
 export const createFile = async (key: string) => {
   try {
@@ -189,14 +195,14 @@ export const createFile = async (key: string) => {
       Body: '',
       Key: key,
       ContentType: 'text/plain'
-    }
+    };
     if (process.env.S3_ENCRYPTION_KEY) {
       const ssecKey = Buffer.alloc(32, process.env.S3_ENCRYPTION_KEY);
       params = {
         ...params,
         SSECustomerAlgorithm: 'AES256',
         SSECustomerKey: ssecKey
-      }
+      };
     }
     const res = await s3.putObject(params).promise();
     return res;
@@ -204,4 +210,4 @@ export const createFile = async (key: string) => {
     console.error(e);
     return e;
   }
-}
+};

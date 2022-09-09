@@ -17,15 +17,19 @@
   };
   let warniOS = false;
   let filesData: ReadFile[] = [];
-  let timeZones = [];
-  let filteredTimezones = [];
+  interface TimeZone {
+    name: string;
+  }
+  let timeZones: TimeZone[] = [];
+  let filteredTimezones: TimeZone[] = [];
 
   let submitting = false;
-  let tzFilter = '';
   let currentTimezone = '';
   let selectedTimezone = '';
 
-  const filterTimezones = (filter: string) => {
+  const filterTimezones = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    let filter = target.value;
     filteredTimezones = timeZones.filter((el) => {
       return el.name.indexOf(filter) > -1;
     });
@@ -48,7 +52,7 @@
     });
     filteredTimezones = timeZones;
     currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const offset = convertMinsToOffset(new Date().getTimezoneOffset());
+    // const offset = convertMinsToOffset(new Date().getTimezoneOffset());
     selectedTimezone = currentTimezone;
   });
 
@@ -86,7 +90,7 @@
         formData.append('files', file);
       }
 
-      const res = await fetch('/', {
+      const res = await fetch('/api/photos', {
         method: 'POST',
         body: formData
       });
@@ -228,7 +232,7 @@
           type="text"
           id="tz-filter"
           class="border rounded px-4 py-2 block w-full outline-primary-500"
-          on:change={(e) => filterTimezones(e.target.value)}
+          on:change={filterTimezones}
           placeholder="e.g. {currentTimezone}"
         />
         <select

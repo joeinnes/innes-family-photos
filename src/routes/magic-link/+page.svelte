@@ -9,10 +9,7 @@
 
   let creating = false;
   type MagicLinkType = 'persist' | 'temp';
-  interface MagicLink {
-    link: string;
-    type: MagicLinkType;
-  }
+
   export let data: PageData;
   $: ({ magicLinks } = data);
   let deleting = false;
@@ -20,7 +17,7 @@
   const createMagicLink = async (type: MagicLinkType) => {
     creating = true;
     try {
-      await fetch('/magic-link?persistent=' + type, {
+      await fetch('/api/magic-link?persistent=' + type, {
         method: 'POST',
         headers: {
           accept: 'application/json'
@@ -43,7 +40,7 @@
   const deleteMagicLink = async (key: string) => {
     try {
       deleting = true;
-      await fetch('magic-link/' + key, {
+      await fetch(`/api/magic-link?name=${key}`, {
         method: 'DELETE'
       });
 
