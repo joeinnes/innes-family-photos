@@ -1,7 +1,7 @@
 <script lang="ts">
   import { parse, differenceInMonths, subMonths, format, addMonths } from 'date-fns';
 
-  export let images = {};
+  export let images: Record<string, any> = {};
   let monthList = Object.keys(images).sort();
 
   export let start = monthList[0];
@@ -30,14 +30,14 @@
   const scrollTo = (month: string) => {
     let elementID = '';
     if (data[month]) {
-      elementID = encodeURIComponent(format(parse(month, 'yyyy-MM', new Date()), 'MMMM yyyy'));
+      elementID = encodeURIComponent(format(parse(month, 'yyyy/MM', new Date()), 'MMMM yyyy'));
     } else {
       while (!data[month] && month !== start) {
-        let monthAsDate = parse(month, 'yyyy-MM', new Date());
+        let monthAsDate = parse(month, 'yyyy/MM', new Date());
         let checkAgainst = addMonths(monthAsDate, 1);
-        month = format(checkAgainst, 'yyyy-MM');
+        month = format(checkAgainst, 'yyyy/MM');
       }
-      elementID = encodeURIComponent(format(parse(month, 'yyyy-MM', new Date()), 'MMMM yyyy'));
+      elementID = encodeURIComponent(format(parse(month, 'yyyy/MM', new Date()), 'MMMM yyyy'));
     }
     if (!elementID) return;
     const header = document.getElementById(elementID);
